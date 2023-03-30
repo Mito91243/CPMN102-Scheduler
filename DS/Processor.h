@@ -1,16 +1,43 @@
 #pragma once
-#include"process.h"
+#include"process.cpp"
 class Processor
 {
-private:
+protected:
 	process* running; // pointer to what the process is working on
 public:
-	virtual process* isfinished() = 0;
+	virtual process* isfinished()
+	{
+		if (running != nullptr)
+		{
+			running->incrementWON();
+			process* temp = running;
+			if (running->getWON() == running->getCT())
+			{
+				running = Schedulealgo();
+				running->setstate('RUN');
+				temp->setstate('TRM');
+				return temp;
+
+			}
+		}
+		return nullptr;
+	}
 	// increments WON and checks if it is equal to its CT,and if yes changes the running pointer to the its next process sets its state to R and sets its RT  
 	//and returns a pointer to the finished one to be added to the termminated
 	//if no returns a nullptr
 	virtual void addtoready(process* pr) = 0;//adds to the list
-	virtual process* needsIO() = 0; //checks if WON is equal to its next IO_R,and if yes changes the running pointer to the its next process sets its state to R and sets its RT
+	virtual process* Schedulealgo() = 0;
+	virtual process* needsIO()
+	{
+		process* temp = running;
+		if (running->getWON() == running->getIO_R())
+		{
+			running = Schedulealgo();
+			temp->setstate('BLK');
+			return temp;
+		}
+	}
+	//checks if WON is equal to its next IO_R,and if yes changes the running pointer to the its next process sets its state to R and sets its RT
 	//and returns a pointer to the one that needs IO to be added to the blocked
 	//if no returns a nullptr
 };
