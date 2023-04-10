@@ -39,6 +39,8 @@ public:
 	int getTT();
 	int getTRT();
 	int getWT();
+	int getIO();
+	int getNIO();
 	char getstate();
 	bool isparent();
 	process* getchild();
