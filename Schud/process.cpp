@@ -75,6 +75,12 @@ int process::getWT() {
 char process::getstate() {
 	return state;
 }
+int process::getIO() {
+	return nextIO;
+}
+int process::getNIO() {
+	return NIO;
+}
 bool process::isparent() {
 	return parent;
 }
