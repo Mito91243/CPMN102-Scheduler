@@ -1,5 +1,4 @@
-#pragma once
-#include "process.h"
+#include "Node.h"
 #include <iostream>
 
 using namespace std;
@@ -8,19 +7,28 @@ class Schudeler
 {
 private:
 	
-	//pointer to the GUI
-	//Queue<*process> ReadyList
-	//Queue<*process> RunList
-	//Queue<*process> BlockedList
-	//Queue<*process> Terminated
-	//int number of FCFS
-	//int number of SJF
-	//int number of RR
+	Queue<process*> NewList;
+	//Queue<process*> ReadyList; -- > Each processor got 1
+	SJF ps;
+	Queue<process*> BlockedList;
+	Queue<process*> TerminatedList;
+	
+	int timestep = 0;
+	int nFCFS;
+	int nSJF;
+	int nRR;
 
 public:
 
-	//void AddProcess();  Chooses which process goes to which processor
+	template<typename A, typename B>
+	void MoveProcess(A Old, B New);
+	
+	template<typename A, typename B>
+	void MoveProcessor(A Old, B New);
+
+	void PrintInfo();
+	void Execute(int timestep);  //Chooses which process goes to which processor
 	void LoadInput();
 	void Run();
-	//void ExecuteProcess(int x);  Executes process at current timestep
+	void Allocate();
 };
