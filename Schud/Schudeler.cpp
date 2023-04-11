@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "Schudeler.h"
+#include "RRprocessor.h"
 #include "process.h"
 #include <string.h>
 #include <windows.h>
@@ -15,7 +16,7 @@ void Schudeler::LoadInput()
     string p;
     cin >> p;
 
-    ifstream InFile("C:\\Users\\HP User\\Desktop\\Project visual\\" + p + ".txt");
+    ifstream InFile("C:\\Users\\HP User\\Desktop\\Project Data\\" + p + ".txt");
 
     //Checks if the File is opened
     if (InFile.fail())
@@ -29,11 +30,12 @@ void Schudeler::LoadInput()
     //Read number of each Processor (First Line)
     int FCFS, SJF, RR;
     InFile >> FCFS >> SJF >> RR;
+    int totalprocessors = FCFS + SJF + RR;
 
-    //Assigning the number of each processor data members in scheduler.h
-    nSJF = SJF;
-    nFCFS = FCFS;
-    nRR = RR;
+    //Create Processor Array in the heap
+    //Assign data member Arrp to it
+     Processor** arrp = new Processor*[totalprocessors];
+     Arrp = arrp;
 
     //Read RR Slice number (Second Line)
     int RRslice;
@@ -52,8 +54,8 @@ void Schudeler::LoadInput()
     int PID, AT, CT, N;
     for (int i = 0; i < ProcessNum; i++)
     {
-        InFile >> PID >> AT >> CT >> N;
-
+        InFile >> AT >> PID >> CT >> N;
+        cout << AT << endl;
         //create a temporary pointer to the new process
         process *temp = new process(AT, PID, CT, N);
 
@@ -90,11 +92,17 @@ void Schudeler::LoadInput()
 
 
     //Read the SIGKILL and the PID
-    int PIDD, SIGKILL;
+    int PIDD, SIGKILL,xx;
     while (InFile.peek() != EOF)
     {
         InFile >> PIDD >> SIGKILL;
-        cout << "PID SIG: " << PIDD << endl << "SigKILL: " << SIGKILL << endl;
+        cout << "PID is: " << PIDD << endl;
+        cout << "SIGKILL IS : " << SIGKILL << endl;
+        KID.enqueue(PIDD);
+        Ktime.enqueue(SIGKILL);
+        cout << "Done Succesffffulll" << endl;
+        cout << Ktime.dequeue(xx) << endl;
+        
     }
 
     InFile.close();
@@ -205,3 +213,5 @@ void Schudeler::Allocate()
     }
 
 }
+  
+ 
