@@ -40,7 +40,7 @@ public:
 	// increments WON and checks if it is equal to its CT,and if yes changes the running pointer to the its next process sets its state to R and sets its RT  
 	//and returns a pointer to the finished one to be added to the termminated
 	//if no returns a nullptr
-	virtual void addtoready(process* pr) = 0;//adds to the list
+	virtual void addtoready(process* pr,int T) = 0;//adds to the list
 	virtual process* Schedulealgo() = 0;
 	virtual process* needsIO(int T)
 	{
