@@ -12,6 +12,7 @@ process::process(int A, int I, int C, int NO)
 	countIOD = 0;
 	nextIO = 0;
 	WON = 0;
+	RT = 0;
 	AIO_D = new int[NIO];
 	AIO_R = new int[NIO];
 	cout << "Process Created: " << endl;
