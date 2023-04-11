@@ -88,6 +88,7 @@ void Schudeler::LoadInput()
         
     }
 
+
     //Read the SIGKILL and the PID
     int PIDD, SIGKILL;
     while (InFile.peek() != EOF)
@@ -113,7 +114,6 @@ void Schudeler::Run()
 
         cout << "Current Timestep :  " << timestep << endl;
 
-        //AddProcess
        // Execute(timestep);
         PrintInfo();
 
@@ -134,31 +134,41 @@ void Schudeler::Execute(int timestep)
 {
 }
 
-void Schudeler::MoveProcess(Queue<process*> Old,Queue<process*> New)
+//Move From processor to BLK LIST / TRM LIST
+template<typename A,typename B>
+void Schudeler::MoveProcess(A Old,B New)
 {
     process *p;
-    Old.dequeue(p);
+    p = Old.Schedulealgo();
     New.enqueue(p);
 }
 
+//Move from processor to another processor
+template<typename A, typename B>
+void Schudeler::MoveProcessor(A Old, B New)
+{
+    process* p;
+    p = Old.Schedulealgo();
+    New.addtoready(p);
+}
 
 void Schudeler::PrintInfo()
 {
 
 
-    cout << "--------------------------- RDY processes ---------------------------" << endl;
-    cout << "Processor 1 [FCFS]: 0 RDY: " << endl; //print each ID of the RDY lists
-    cout << "Processor 2 [SJF]: 0 RDY" << endl;  // print no. of ready in each processor
-    cout << "Processor 3 [RR] : 0 RDY" << endl;
+   // cout << "--------------------------- RDY processes ---------------------------" << endl;
+   // cout << "Processor 1 [FCFS]: 0 RDY: " << endl; //print each ID of the RDY lists
+   // cout << "Processor 2 [SJF]: 0 RDY" << endl;  // print no. of ready in each processor
+   // cout << "Processor 3 [RR] : 0 RDY" << endl;
 
-    cout << "--------------------------- BLK processes ---------------------------" << endl;
-    cout << BlockedList.getCount() << " BLK: " << endl; //print total blocked processes with their ID's
+   // cout << "--------------------------- BLK processes ---------------------------" << endl;
+   // cout << BlockedList.getCount() << " BLK: " << endl; //print total blocked processes with their ID's
 
-    cout << "--------------------------- RUN processes ---------------------------" << endl;
-   // cout << "3 RUN " << endl; // print total running process with their ID's and processor ex: 21 (p3)
+   // cout << "--------------------------- RUN processes ---------------------------" << endl;
+   //// cout << "3 RUN " << endl; // print total running process with their ID's and processor ex: 21 (p3)
 
-    cout << "--------------------------- TRM processes ---------------------------" << endl;
-    cout << TerminatedList.getCount() <<" TRM: " << endl; // print each process ID
+   // cout << "--------------------------- TRM processes ---------------------------" << endl;
+   // cout << TerminatedList.getCount() <<" TRM: " << endl; // print each process ID
 }
 
 
@@ -166,12 +176,12 @@ void Schudeler::PrintInfo()
 void Schudeler::Allocate()
 {
     //Generate Random Number
-    int rnumber = rand();
+    int rnumber = rand() % 100 + 1;
 
     //Case for Moving from Lists mentioned in Phase 1
     if (1 < rnumber < 15)
     {
-        //MoveProcess(RunList of processor , BlockedList);
+        //MoveProcess(NewList , BlockedList);
     }
     else if(20 < rnumber < 30)
     {
@@ -185,4 +195,13 @@ void Schudeler::Allocate()
     {
         //MoveProcess(RunList of processor , ReadyList of processor)   The ---- should be the RunQueue in the processor
     }
+
+    int rnumber2 = rand() % 100 + 1;
+    process* p;
+    if (rnumber2 < 10)
+    {
+        BlockedList.dequeue(p);
+        //Move to ready List of processor
+    }
+
 }
