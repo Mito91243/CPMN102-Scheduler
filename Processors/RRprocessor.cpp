@@ -4,10 +4,12 @@ RRprocessor::RRprocessor(int ts) {
 	running = nullptr;
 }
 void RRprocessor:: addtoready(process* pr,int T) {
-	if (running == nullptr) {
+	if (running == nullptr)
+	{
 		running = pr;
 		running->setstate('RUN');
-		if (running->getRT() == 0) {
+		if (running->getRT() == 0)
+		{
 			running->setRT(T);
 		}
 		return;

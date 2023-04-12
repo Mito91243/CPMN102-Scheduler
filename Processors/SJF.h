@@ -5,14 +5,16 @@ class SJF :public Processor
 {
 private:
 	int count;
+	process* running;
 	
 	PriorityQueue<process*>  sjfqueue;
 	int t;
 public:
 	SJF();
-	void  addtoready(process* pr);
+	void  addtoready(process* pr, int T);
 	
 	process* Schedulealgo();
+	process* getrun();
 	
 	
 };
