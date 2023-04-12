@@ -92,9 +92,6 @@ process* RRprocessor::reachedts(int T) {
 	else return nullptr;
 
 }
-process* RRprocessor::getrun() {
-	return running;
-}
 Queue<process*>RRprocessor::getqueue() {
 	return Q1;
 }
