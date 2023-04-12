@@ -13,7 +13,7 @@ public:
 	void  addtoready(process* pr);
 	
 	process* Schedulealgo();
-	
+	void printdata();
 	
 };
 
