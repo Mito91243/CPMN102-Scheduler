@@ -83,5 +83,16 @@ public:
 		}
 		return Arr;
 	}
+	void printpq()
+	{
+		if (!frontPtr)
+			return;
+		Node<T>* p = frontPtr;
+		while (p) {
+			cout << p;
+			p = p->getNext();
+		}
+
+	}
 	
 };

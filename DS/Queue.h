@@ -156,3 +156,15 @@ T* Queue<T>::toArray()
 	}
 	return Arr;
 }
+template <typename T>
+void Queue<T>::printq()
+{
+	if (!frontPtr)
+		return;
+	Node<T>* p = frontPtr;
+	while (p) {
+		cout << p;
+		p = p->getNext();
+	}
+
+}

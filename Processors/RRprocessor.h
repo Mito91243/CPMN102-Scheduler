@@ -17,5 +17,6 @@ public:
 	process* reachedts(int T);
 	process* getrun();
 	Queue<process*> getqueue();
+	void printdata();
 };
 

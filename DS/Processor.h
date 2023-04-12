@@ -68,4 +68,5 @@ public:
 	//checks if WON is equal to its next IO_R,and if yes changes the running pointer to the its next process sets its state to R and sets its RT
 	//and returns a pointer to the one that needs IO to be added to the blocked
 	//if no returns a nullptr
+	virtual void printdata() = 0;
 };
