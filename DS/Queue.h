@@ -17,6 +17,7 @@ public:
 	bool dequeue(T& frntEntry);
 	bool peekFront(T& frntEntry)  const;
 	T* toArray();	//returns array of T (array if items)
+	void printq();
 	~Queue();
 };
 /////////////////////////////////////////////////////////////////////////////////////////
