@@ -18,7 +18,7 @@ process* FCFS::randkill(int r)
 	p->setstate('TRM');
 }
 
-void FCFS :: print()
+void FCFS :: printdata()
 {
 	cout << RL.count() << " " << "RDY: ";
 	RL.PrintList();
