@@ -3,6 +3,7 @@
 class process
 {
 private:
+	friend ostream& operator<<(ostream&, process* p);
 	int AT;
 	int PID;
 	int CT;
