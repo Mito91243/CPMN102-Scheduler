@@ -10,8 +10,11 @@ public:
 		{
 			process* temp = running;
 			running = Schedulealgo();
-			if (running->getRT() == 0) {
-				running->setRT(T);
+			if (running != nullptr) {
+				running->setstate('RUN');
+				if (running->getRT() == 0) {
+					running->setRT(T);
+				}
 			}
 			return temp;
 		}
@@ -27,8 +30,11 @@ public:
 			{
 				running = Schedulealgo();
 				running->setstate('RUN');
-				if (running->getRT() == 0) {
-					running->setRT(T);
+				if (running != nullptr) {
+					running->setstate('RUN');
+					if (running->getRT() == 0) {
+						running->setRT(T);
+					}
 				}
 				temp->setstate('TRM');
 				return temp;
@@ -48,8 +54,11 @@ public:
 		if (running->getWON() == running->getIO_R())
 		{
 			running = Schedulealgo();
-			if (running->getRT() == 0) {
-				running->setRT(T);
+			if (running != nullptr) {
+				running->setstate('RUN');
+				if (running->getRT() == 0) {
+					running->setRT(T);
+				}
 			}
 			temp->setstate('BLK');
 			return temp;
