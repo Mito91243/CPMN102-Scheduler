@@ -12,10 +12,8 @@ private:
 public:
 	 void addtoready(process* pr);//adds to the list
 	 process* Schedulealgo();
-	 process* fork();
-	 char orphan(process* p);
-	 char kill(process* p);
-	 //bool isempty();
+	 process* randkill(int r);
+	 void print();
 };
 
 #endif	
