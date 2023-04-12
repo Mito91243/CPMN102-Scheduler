@@ -20,6 +20,7 @@ void RRprocessor:: addtoready(process* pr,int T) {
 process* RRprocessor::Schedulealgo() {
 	process* pr;
 	bool z = Q1.dequeue(pr);
+	TOP = 0;
 	if (z)
 		return pr;
 	else
@@ -71,23 +72,20 @@ process* RRprocessor::Schedulealgo() {
 	else return nullptr;
 }*/
 process* RRprocessor::reachedts(int T) {
+	if (running != nullptr) {
+		running->incrementWON();
+	}
 	TOP++;
 	if (TOP == timeslice) {
 		process* finished = running;
-		process* pr;
-		bool z = Q1.dequeue(pr);
-		if (!z) {
-			return finished;
-		}
-		else {
-			running = pr;
-			running->setstate('r');
+		running = Schedulealgo();
+		if (running != nullptr) {
+			running->setstate('RUN');
 			if (running->getRT() == 0) {
 				running->setRT(T);
 			}
-			return finished;
 		}
-
+		return finished;
 	}
 	else return nullptr;
 
