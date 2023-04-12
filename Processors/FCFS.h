@@ -13,7 +13,7 @@ public:
 	 void addtoready(process* pr);//adds to the list
 	 process* Schedulealgo();
 	 process* randkill(int r);
-	 void print();
+	 void printdata();
 };
 
 #endif	
