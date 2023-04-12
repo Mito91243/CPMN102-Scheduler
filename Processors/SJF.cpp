@@ -23,4 +23,7 @@ process* SJF::Schedulealgo()
 		return p;
 }
 
-
+void SJF::printdata() {
+	cout << sjfqueue.getCount() << "RDY";
+	sjfqueue.printpq();
+}
