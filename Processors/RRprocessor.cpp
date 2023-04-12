@@ -98,3 +98,7 @@ process* RRprocessor::getrun() {
 Queue<process*>RRprocessor::getqueue() {
 	return Q1;
 }
+void RRprocessor::printdata() {
+	cout << Q1.getCount() << "RDY";
+	Q1.printq();
+}
