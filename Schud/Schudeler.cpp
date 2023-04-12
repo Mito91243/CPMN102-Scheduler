@@ -30,11 +30,11 @@ void Schudeler::LoadInput()
     //Read number of each Processor (First Line)
     int FCFS, SJF, RR;
     InFile >> FCFS >> SJF >> RR;
-    int totalprocessors = FCFS + SJF + RR;
+    processornum = RR ;
 
     //Create Processor Array in the heap
     //Assign data member Arrp to it
-     Processor** arrp = new Processor*[totalprocessors];
+     Processor** arrp = new Processor*[processornum];
      Arrp = arrp;
 
     //Read RR Slice number (Second Line)
@@ -46,16 +46,21 @@ void Schudeler::LoadInput()
     InFile >> RTF >> MaxW >> STL >> Fork;
 
 
+    for (int i = 0; i < RR; i++)
+    {
+        Arrp[i] = new RRprocessor(RRslice);
+    }
+
     //Read the number of processes
-    int ProcessNum;
-    InFile >> ProcessNum;
+   
+    InFile >> processnum;
 
     //Read Each proccess details
     int PID, AT, CT, N;
-    for (int i = 0; i < ProcessNum; i++)
+    for (int i = 0; i < processnum; i++)
     {
         InFile >> AT >> PID >> CT >> N;
-        cout << AT << endl;
+
         //create a temporary pointer to the new process
         process *temp = new process(AT, PID, CT, N);
 
@@ -96,12 +101,6 @@ void Schudeler::LoadInput()
     while (InFile.peek() != EOF)
     {
         InFile >> PIDD >> SIGKILL;
-        cout << "PID is: " << PIDD << endl;
-        cout << "SIGKILL IS : " << SIGKILL << endl;
-        KID.enqueue(PIDD);
-        Ktime.enqueue(SIGKILL);
-        cout << "Done Succesffffulll" << endl;
-        cout << Ktime.dequeue(xx) << endl;
         
     }
 
@@ -122,8 +121,8 @@ void Schudeler::Run()
 
         cout << "Current Timestep :  " << timestep << endl;
 
-       // Execute(timestep);
-        PrintInfo();
+        Allocate();
+        Simulate();
 
         
         
@@ -132,6 +131,8 @@ void Schudeler::Run()
         cout << "Press y to move to next step! " << endl;
         cin >> x;
 
+        // process*p = Processor.is finished
+        //
         timestep++;
         
     }
@@ -160,14 +161,22 @@ void Schudeler::MoveProcessor(A Old, B New)
     New.addtoready(p);
 }
 
+
+void Schudeler::MoveToTerminated(process *p)
+{
+    TerminatedList.enqueue(p);
+}
+
 void Schudeler::PrintInfo()
 {
+
+
 
 
    // cout << "--------------------------- RDY processes ---------------------------" << endl;
    // cout << "Processor 1 [FCFS]: 0 RDY: " << endl; //print each ID of the RDY lists
    // cout << "Processor 2 [SJF]: 0 RDY" << endl;  // print no. of ready in each processor
-   // cout << "Processor 3 [RR] : 0 RDY" << endl;
+    //cout << "Processor 3 [RR] :  " << R
 
    // cout << "--------------------------- BLK processes ---------------------------" << endl;
    // cout << BlockedList.getCount() << " BLK: " << endl; //print total blocked processes with their ID's
@@ -181,37 +190,87 @@ void Schudeler::PrintInfo()
 
 
 
-void Schudeler::Allocate()
+void Schudeler::Simulate()
 {
-    //Generate Random Number
+    process* p;
+    srand(time(0));
+
+    for (int i = 0; i < processornum; i++)
+    {
+
+        //Get the current processor Run
+        p = Arrp[i]->changerun(timestep);
+
+        //if the processor has no running process return and move on to next process
+        if (!p)
+            return;
+
+
+        //Generate Random Number
+        int rnumber = rand() % 100 + 1;
+
+        //Cases
+        if (1 < rnumber && rnumber < 15)
+        {
+            BlockedList.enqueue(p);
+        }
+        else if (20 < rnumber && rnumber < 30)
+        {
+            Arrp[i]->addtoready(p,timestep);
+        }
+        else if (50 < rnumber && rnumber < 60)
+        {
+            TerminatedList.enqueue(p);
+        }
+
+
+    }
+   
+    //check if blockedList is empty
+    if (BlockedList.isEmpty())
+       return;
+
     int rnumber = rand() % 100 + 1;
 
-    //Case for Moving from Lists mentioned in Phase 1
-    if (1 < rnumber < 15)
+    if (rnumber <= 10)
     {
-        //MoveProcess(NewList , BlockedList);
-    }
-    else if(20 < rnumber < 30)
-    {
-        //MoveProcess(RunList of processor , ReadyList of processor);  
-    }
-    else if (50 < rnumber < 60)
-    {
-        //MoveProcess(RunList of processor , Terminated List);
-    }
-    else if (20 < rnumber < 30)
-    {
-        //MoveProcess(RunList of processor , ReadyList of processor)   The ---- should be the RunQueue in the processor
-    }
-
-    int rnumber2 = rand() % 100 + 1;
-    process* p;
-    if (rnumber2 < 10)
-    {
-        BlockedList.dequeue(p);
-        //Move to ready List of processor
+            BlockedList.dequeue(p);
     }
 
 }
-  
+
+void Schudeler::Allocate()
+{
+    process* p,*q;
+    NewList.peekFront(p);
+    
+    //check if process in newList has arrival time as timestep
+    if (!p || p->getAT() != timestep)
+        return;
+    
+        //loop over processors to see which one has no running process meaning it's empty
+    int min = 99999999;
+    //get the smallest readylist
+    for (int i = 0; i < processornum; i++)
+    {
+        if (Arrp[i]->getRDYCount() < min)
+        {
+            min = Arrp[i]->getRDYCount();
+        }
+
+    }
+    //get the processor with that smallest list and assign it process
+    for (int i = 0; i < processornum; i++)
+    {
+        if (Arrp[i]->getRDYCount() == min)
+        {
+            Arrp[i]->addtoready(p,timestep);
+        }
+    }
+
+        //remove the process from newlist
+        NewList.dequeue(q);
+        //recursive call again to see if multiple processes has the same timestep
+        Allocate();  
+}
  
