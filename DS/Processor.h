@@ -20,6 +20,9 @@ public:
 		}
 		return nullptr;
 	}
+	process* getrun() {
+	return running;
+	}
 	virtual process* isfinished(int T)
 	{
 		if (running != nullptr)
