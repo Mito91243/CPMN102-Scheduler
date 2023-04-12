@@ -33,9 +33,9 @@ void Schudeler::LoadInput()
     processornum = RR ;
 
     //Create Processor Array in the heap
-    //Assign data member Arrp to it
+    //Assign data member pArr to it
      Processor** arrp = new Processor*[processornum];
-     Arrp = arrp;
+     pArr = arrp;
 
     //Read RR Slice number (Second Line)
     int RRslice;
@@ -48,7 +48,7 @@ void Schudeler::LoadInput()
 
     for (int i = 0; i < RR; i++)
     {
-        Arrp[i] = new RRprocessor(RRslice);
+        pArr[i] = new RRprocessor(RRslice);
     }
 
     //Read the number of processes
@@ -63,7 +63,6 @@ void Schudeler::LoadInput()
 
         //create a temporary pointer to the new process
         process *temp = new process(AT, PID, CT, N);
-
         
         //Read the IO_R and the IO_D
         if (N != 0)
@@ -139,9 +138,7 @@ void Schudeler::Run()
 
 }
 
-void Schudeler::Execute(int timestep)
-{
-}
+
 
 //Move From processor to BLK LIST / TRM LIST
 template<typename A,typename B>
@@ -199,7 +196,7 @@ void Schudeler::Simulate()
     {
 
         //Get the current processor Run
-        p = Arrp[i]->changerun(timestep);
+        p = pArr[i]->changerun(timestep);
 
         //if the processor has no running process return and move on to next process
         if (!p)
@@ -216,7 +213,7 @@ void Schudeler::Simulate()
         }
         else if (20 < rnumber && rnumber < 30)
         {
-            Arrp[i]->addtoready(p,timestep);
+            pArr[i]->addtoready(p,timestep);
         }
         else if (50 < rnumber && rnumber < 60)
         {
@@ -242,35 +239,25 @@ void Schudeler::Simulate()
 void Schudeler::Allocate()
 {
     process* p,*q;
-    NewList.peekFront(p);
+
+    if (NewList.isEmpty())
+        return;
+
+     NewList.peekFront(p);
+
+    if (Acounter == processornum)
+        Acounter = 0;
+
     
     //check if process in newList has arrival time as timestep
     if (!p || p->getAT() != timestep)
         return;
     
-        //loop over processors to see which one has no running process meaning it's empty
-    int min = 99999999;
-    //get the smallest readylist
-    for (int i = 0; i < processornum; i++)
-    {
-        if (Arrp[i]->getRDYCount() < min)
-        {
-            min = Arrp[i]->getRDYCount();
-        }
+    pArr[Acounter++]->addtoready(p, timestep);
 
-    }
-    //get the processor with that smallest list and assign it process
-    for (int i = 0; i < processornum; i++)
-    {
-        if (Arrp[i]->getRDYCount() == min)
-        {
-            Arrp[i]->addtoready(p,timestep);
-        }
-    }
-
+    
         //remove the process from newlist
         NewList.dequeue(q);
         //recursive call again to see if multiple processes has the same timestep
         Allocate();  
 }
- 
