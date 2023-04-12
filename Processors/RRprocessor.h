@@ -15,7 +15,6 @@ public:
 	virtual void addtoready(process* pr,int T);
 	virtual process* Schedulealgo();
 	process* reachedts(int T);
-	process* getrun();
 	Queue<process*> getqueue();
 	void printdata();
 };
