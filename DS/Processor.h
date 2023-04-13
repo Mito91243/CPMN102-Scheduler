@@ -1,5 +1,5 @@
 #pragma once
-#include"process.cpp"
+#include"process.h"
 class Processor
 {
 protected:
