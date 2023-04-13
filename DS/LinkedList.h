@@ -34,7 +34,7 @@ public:
 
 		while (p)
 		{
-			cout << p->getItem()<<" ";
+			cout << *p->getItem();
 			p = p->getNext();
 		}
 	}
