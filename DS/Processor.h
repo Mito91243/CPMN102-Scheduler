@@ -6,9 +6,9 @@ protected:
 	process* running; // pointer to what the process is working on
 public:
 	virtual process* changerun(int T) {
+		process* temp = running;
 		if (running != nullptr)
 		{
-			process* temp = running;
 			running = Schedulealgo();
 			if (running != nullptr) {
 				running->setstate('RUN');
@@ -16,9 +16,8 @@ public:
 					running->setRT(T);
 				}
 			}
-			return temp;
 		}
-		return nullptr;
+		return temp;
 	}
 	process* getrun() {
 	return running;
