@@ -43,5 +43,9 @@ process* SJF::getrun()
 {
 	return running;
 }
+void SJF::printdata() {
+	cout << sjfqueue.getCount() << "RDY:   ";
+	sjfqueue.printpq();
+}
 
 
