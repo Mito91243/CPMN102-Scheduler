@@ -101,7 +101,7 @@ process::~process() {
 	delete[]AIO_D;
 	delete[]AIO_R;
 }
-ostream& operator<<(ostream& aout, process* p) {
+/*ostream& operator<<(ostream& aout, process* p) {
 	aout << p->getPID();
 	return aout;
-}
+}*/
