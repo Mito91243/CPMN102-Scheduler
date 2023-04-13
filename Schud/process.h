@@ -49,12 +49,11 @@ public:
 	int getIO_D();
 	int getWON();
 	~process();
-	friend ostream & operator << (ostream& out, const process & p);
+	friend ostream& operator << (ostream& out, const process& p) {
+		out << p.PID << "  ";
+		return out;
+	}
 };
-ostream & operator << (ostream& out,const process & p) {
-	out << p.PID << "  ";
-	return out;
-}
 
 
 
