@@ -1,9 +1,9 @@
 #pragma once
-
+#include<iostream>
+using namespace std;
 class process
 {
 private:
-	friend ostream& operator<<(ostream&, process* p);
 	int AT;
 	int PID;
 	int CT;
@@ -49,5 +49,12 @@ public:
 	int getIO_D();
 	int getWON();
 	~process();
+	friend ostream & operator << (ostream& out, const process & p);
 };
+ostream & operator << (ostream& out,const process & p) {
+	out << p.PID << "  ";
+	return out;
+}
+
+
 
