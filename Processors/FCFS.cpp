@@ -1,7 +1,7 @@
 #pragma once
 #include "FCFS.h"
 
-void FCFS::addtoready(process* p)
+void FCFS::addtoready(process* p,int timestep)
 {
 	RL.InsertEnd(p);
 	p->setstate('RDY');
