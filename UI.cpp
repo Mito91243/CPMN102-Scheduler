@@ -54,7 +54,7 @@ public:
 		{
 			if (P[i]->getrun())
 			{
-				cout << P[i]->getrun()->getPID()<<"(P"<<i<<") ";
+				cout << P[i]->getrun()<<"(P"<<i<<") ";
 			}
 		}
 		cout << endl;
