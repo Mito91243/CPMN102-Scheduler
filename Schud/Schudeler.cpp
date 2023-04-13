@@ -2,6 +2,8 @@
 #include <fstream>
 #include "Schudeler.h"
 #include "RRprocessor.h"
+#include "SJF.h"
+#include "FCFS.h"
 #include "process.h"
 #include <string.h>
 #include <windows.h>
@@ -26,12 +28,11 @@ void Schudeler::LoadInput()
     }
 
 
-
     //Read number of each Processor (First Line)
-    int FCFS, SJF, RR;
-    InFile >> FCFS >> SJF >> RR;
-    processornum = RR ;
-
+    int nFCFS, nSJF, nRR;
+    InFile >> nFCFS >> nSJF >> nRR;
+    processornum = nRR + nFCFS + nSJF ;
+    cout << "PROCESSOR NUM IS: " << processornum<< endl;
     //Create Processor Array in the heap
     //Assign data member pArr to it
      Processor** arrp = new Processor*[processornum];
@@ -45,10 +46,21 @@ void Schudeler::LoadInput()
     int RTF, MaxW, STL, Fork;
     InFile >> RTF >> MaxW >> STL >> Fork;
 
+    int c=0;
 
-    for (int i = 0; i < RR; i++)
+    for (int i = 0; i < nRR; i++)
     {
         pArr[i] = new RRprocessor(RRslice);
+    }
+    for (int i = 0; i < nFCFS; i++)
+    {
+        pArr[nRR + i] = new FCFS();
+
+    }
+    for (int i = 0; i < nSJF; i++)
+    {
+        pArr[nRR + nFCFS + i] = new SJF();
+
     }
 
     //Read the number of processes
@@ -120,9 +132,9 @@ void Schudeler::Run()
 
         cout << "Current Timestep :  " << timestep << endl;
 
-        Allocate();
         Simulate();
-
+        Allocate();
+        PrintInfo();
         
         
         
@@ -130,9 +142,12 @@ void Schudeler::Run()
         cout << "Press y to move to next step! " << endl;
         cin >> x;
 
-        // process*p = Processor.is finished
-        //
-        timestep++;
+        
+
+
+        timestep++;        
+        
+
         
     }
 
@@ -140,23 +155,14 @@ void Schudeler::Run()
 
 
 
-//Move From processor to BLK LIST / TRM LIST
-template<typename A,typename B>
-void Schudeler::MoveProcess(A Old,B New)
-{
-    process *p;
-    p = Old.Schedulealgo();
-    New.enqueue(p);
-}
-
 //Move from processor to another processor
-template<typename A, typename B>
-void Schudeler::MoveProcessor(A Old, B New)
-{
-    process* p;
-    p = Old.Schedulealgo();
-    New.addtoready(p);
-}
+//template<typename A, typename B>
+//void Schudeler::MoveProcessor(A Old, B New)
+//{
+//    process* p;
+//    p = Old.Schedulealgo(); // Change implementation schdule algo
+//    New.addtoready(p);
+//}
 
 
 void Schudeler::MoveToTerminated(process *p)
@@ -168,21 +174,19 @@ void Schudeler::PrintInfo()
 {
 
 
+    cout << "--------------------------- RDY processes ---------------------------" << endl;
+    cout << "Processor 1 [FCFS]: 0 RDY: " << endl; //print each ID of the RDY lists
+    cout << "Processor 2 [SJF]: 0 RDY" << endl;  // print no. of ready in each processor
+    cout << "Processor 3 [RR] : 0 RDY " << endl;
 
+    cout << "--------------------------- BLK processes ---------------------------" << endl;
+    cout << BlockedList.getCount() << " BLK: " << endl; //print total blocked processes with their ID's
 
-   // cout << "--------------------------- RDY processes ---------------------------" << endl;
-   // cout << "Processor 1 [FCFS]: 0 RDY: " << endl; //print each ID of the RDY lists
-   // cout << "Processor 2 [SJF]: 0 RDY" << endl;  // print no. of ready in each processor
-    //cout << "Processor 3 [RR] :  " << R
+    cout << "--------------------------- RUN processes ---------------------------" << endl;
+   // cout << "3 RUN " << endl; // print total running process with their ID's and processor ex: 21 (p3)
 
-   // cout << "--------------------------- BLK processes ---------------------------" << endl;
-   // cout << BlockedList.getCount() << " BLK: " << endl; //print total blocked processes with their ID's
-
-   // cout << "--------------------------- RUN processes ---------------------------" << endl;
-   //// cout << "3 RUN " << endl; // print total running process with their ID's and processor ex: 21 (p3)
-
-   // cout << "--------------------------- TRM processes ---------------------------" << endl;
-   // cout << TerminatedList.getCount() <<" TRM: " << endl; // print each process ID
+    cout << "--------------------------- TRM processes ---------------------------" << endl;
+    cout << TerminatedList.getCount() <<" TRM: " << endl; // print each process ID
 }
 
 
@@ -195,16 +199,21 @@ void Schudeler::Simulate()
     for (int i = 0; i < processornum; i++)
     {
 
-        //Get the current processor Run
-        p = pArr[i]->changerun(timestep);
-
-        //if the processor has no running process return and move on to next process
-        if (!p)
-            return;
-
 
         //Generate Random Number
         int rnumber = rand() % 100 + 1;
+
+        //Check if randomized number is within range
+        if (rnumber > 60 || (rnumber > 15 && rnumber < 20) || (rnumber > 30 && rnumber < 50))
+            continue;
+        
+        //Get Running Process
+         p = pArr[i]->getrun();
+
+         //Check if runnging process is not NULL
+         if (!p)
+            continue;
+       
 
         //Cases
         if (1 < rnumber && rnumber < 15)
@@ -227,9 +236,9 @@ void Schudeler::Simulate()
     if (BlockedList.isEmpty())
        return;
 
-    int rnumber = rand() % 100 + 1;
-
-    if (rnumber <= 10)
+    //Case 2
+    int rnumber2 = rand() % 100 + 1;
+    if (rnumber2 <= 10)
     {
             BlockedList.dequeue(p);
     }
@@ -245,6 +254,7 @@ void Schudeler::Allocate()
 
      NewList.peekFront(p);
 
+     //Once counter reaches processornum reset
     if (Acounter == processornum)
         Acounter = 0;
 
@@ -254,10 +264,10 @@ void Schudeler::Allocate()
         return;
     
     pArr[Acounter++]->addtoready(p, timestep);
-
     
         //remove the process from newlist
         NewList.dequeue(q);
         //recursive call again to see if multiple processes has the same timestep
         Allocate();  
 }
+ 
