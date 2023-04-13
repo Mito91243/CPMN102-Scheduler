@@ -89,7 +89,7 @@ public:
 			return;
 		Node<T>* p = frontPtr;
 		while (p) {
-			cout << p;
+			cout << *p->getItem();
 			p = p->getNext();
 		}
 
