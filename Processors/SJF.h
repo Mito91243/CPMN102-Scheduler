@@ -15,6 +15,7 @@ public:
 	
 	process* Schedulealgo();
 	process* getrun();
+	void printdata();
 	
 	
 };
