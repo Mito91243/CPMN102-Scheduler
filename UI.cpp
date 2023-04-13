@@ -30,8 +30,8 @@ public:
 			RRprocessor* R = dynamic_cast<RRprocessor*>(P[i]);
 			SJF* S = dynamic_cast<SJF*>(P[i]);
 			if (F)cout << " [FCFS]: ";
-			if (R)cout << " [SJF]: ";
-			if (S)cout << " [RR]";
+			if (R)cout << " [RR]: ";
+			if (S)cout << " [SJF]: ";
 			P[i]->printdata();
 			cout << endl;
 		}
