@@ -1,10 +1,22 @@
 #pragma once
 #include "FCFS.h"
 
-void FCFS::addtoready(process* p,int timestep)
+void FCFS::addtoready(process* p, int t)
 {
-	RL.InsertEnd(p);
-	p->setstate('RDY');
+	if (running == nullptr)
+	{
+		running = p;
+		p->setstate('RUN');
+		if (p->getRT() == 0)
+		{
+			p->setRT(t);
+		}
+	}
+	else
+	{
+		RL.InsertEnd(p);
+		p->setstate('RDY');
+	}
 }
 
 process* FCFS::Schedulealgo()
