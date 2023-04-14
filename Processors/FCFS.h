@@ -10,7 +10,7 @@ private:
 
 	LinkedList<process*> RL;
 public:
-	 void addtoready(process* pr);//adds to the list
+	 void addtoready(process* pr,int t);//adds to the list
 	 process* Schedulealgo();
 	 process* randkill(int r);
 	 void printdata();
