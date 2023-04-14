@@ -26,7 +26,9 @@ process* FCFS::Schedulealgo()
 
 process* FCFS::randkill(int r)
 {
-	process* p = RL.traverse(r);
+	int s = floor(r * (RL.count() + 1));
+	process* p = RL.traverse(s);
+	RL.DeleteNode(p);
 	p->setstate('TRM');
 }
 
