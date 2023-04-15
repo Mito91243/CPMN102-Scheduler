@@ -10,6 +10,18 @@
 
 using namespace std;
 
+Schudeler::Schudeler()
+{
+    timestep = 0;
+    Acounter = 0;
+    processornum = 0;
+    processnum = 0;
+    pArr = NULL;
+
+    pUI = new UI;
+
+}
+
 void Schudeler::LoadInput()
 {
 
