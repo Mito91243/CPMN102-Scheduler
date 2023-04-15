@@ -20,6 +20,7 @@ private:
 
 public:
 
+	Schudeler();
 	template<typename A, typename B>
 	void MoveProcess(A Old, B New);
 	
