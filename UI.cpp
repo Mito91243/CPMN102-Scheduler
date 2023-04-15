@@ -40,10 +40,9 @@ public:
 		B.printq();
 		cout << endl;
 		cout << '\t' << "RUN processes" << '\t' << endl;
-		int c;
+		int c = 0;
 		for (int i = 0; i < sizeof(P); i++)
 		{
-			c=0;
 			if (P[i]->getrun())
 			{
 				c++;
