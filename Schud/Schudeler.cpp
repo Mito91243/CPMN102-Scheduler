@@ -146,7 +146,7 @@ void Schudeler::Run()
 
         Simulate();
         Allocate();
-        PrintInfo();
+        pUI->updateUI(timestep, pArr, BlockedList, TerminatedList);
         
         
         
