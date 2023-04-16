@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _FCFS
 #define _FCFS
 
@@ -7,13 +8,71 @@
 class FCFS : public Processor
 {
 private:
-
+	process* running;
 	LinkedList<process*> RL;
+
 public:
-	 void addtoready(process* pr,int t);//adds to the list
-	 process* Schedulealgo();
-	 process* randkill(int r);
-	 void printdata();
+	FCFS()
+	{
+
+	}
+	void addtoready(process* pr,int timestep)
+	{
+		if (running == nullptr) {
+			running = pr;
+			running->setstate('RUN');
+			if (running->getRT() == 0)
+			{
+				running->setRT(timestep);
+			}
+			return;
+		}
+		else
+		{
+		}
+		RL.InsertEnd(pr);
+		pr->setstate('RDY');
+
+
+	}
+	process* Schedulealgo()
+	{
+		process*p =  RL.DeleteFirst();
+		if (p)
+			return p;
+
+			return nullptr;
+	}
+	process* randkill(int r)
+	{
+		process* p = RL.traverse(r);
+		p->setstate('TRM');
+	}
+	void printdata()
+	{
+		cout << RL.count() << " " << "RDY: ";
+		RL.PrintList();
+	}
+	process* getrun()
+	{
+		return running;
+	}
+	process* changerun(int T)
+	{
+		process* temp = running;
+
+		if (running != nullptr)
+		{
+			running = Schedulealgo();
+			if (running != nullptr) {
+				running->setstate('RUN');
+				if (running->getRT() == 0) {
+					running->setRT(T);
+				}
+			}
+		}
+		return temp;
+	}
 };
 
 #endif	
