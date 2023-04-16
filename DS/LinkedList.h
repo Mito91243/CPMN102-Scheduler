@@ -39,11 +39,9 @@ public:
 		}
 	}
 	////////////////////////////////////////////////////////////////////////
-	/*
-	* Function: InsertBeg.
-	* Creates a new node and adds it to the beginning of a linked list.
+	//Function: InsertBeg.
+	// Creates a new node and adds it to the beginning of a linked list.
 	void InsertBeg(const T& data)
-  */
 	{
 		Node<T>* R = new Node<T>(data);
 		R->setNext(Head);
