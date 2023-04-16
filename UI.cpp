@@ -15,8 +15,6 @@ class UI
 public:
 	UI()
 	{
-		Schudeler* S = new Schudeler;
-		S->Run();
 	}
 	void updateUI(int &t,Processor* P[],Queue<process*> &B,Queue<process*> &T)
 	{
