@@ -2,13 +2,17 @@
 #include <fstream>
 #include "Schudeler.h"
 #include "RRprocessor.h"
+#include "LinkedList.h"
 #include "SJF.h"
 #include "FCFS.h"
+#include "Node.h"
 #include "process.h"
 #include <string.h>
 #include <windows.h>
+#include "UI.h"
 
 using namespace std;
+
 
 Schudeler::Schudeler()
 {
@@ -39,12 +43,11 @@ void Schudeler::LoadInput()
         exit(1);
     }
 
-
     //Read number of each Processor (First Line)
     int nFCFS, nSJF, nRR;
     InFile >> nFCFS >> nSJF >> nRR;
     processornum = nRR + nFCFS + nSJF ;
-    cout << "PROCESSOR NUM IS: " << processornum<< endl;
+
     //Create Processor Array in the heap
     //Assign data member pArr to it
      Processor** arrp = new Processor*[processornum];
@@ -57,6 +60,7 @@ void Schudeler::LoadInput()
     //Read RTF,MAXW,STL,FORK PROBABILITY
     int RTF, MaxW, STL, Fork;
     InFile >> RTF >> MaxW >> STL >> Fork;
+
 
     int c=0;
 
@@ -78,7 +82,6 @@ void Schudeler::LoadInput()
     //Read the number of processes
    
     InFile >> processnum;
-
     //Read Each proccess details
     int PID, AT, CT, N;
     for (int i = 0; i < processnum; i++)
@@ -92,19 +95,26 @@ void Schudeler::LoadInput()
         if (N != 0)
         {
             InFile.ignore(1, ' ');
+
             int x, y;
             for (int i = 0; i < N; i++)
             {
                 if (i != 0)
                 {
                     InFile.ignore(1, ',');
+
                 }
 
                 InFile.ignore(1, '(');
+
                 InFile >> x;
+
                 InFile.ignore(1, ',');
+
                 InFile >> y;
+
                 InFile.ignore(1, ')');
+
 
                 //Add the IO_D and IO_R incrementally
                 temp->AddIO_D(x);
@@ -117,22 +127,25 @@ void Schudeler::LoadInput()
         NewList.enqueue(temp);
         
     }
-
-
+    
+    
     //Read the SIGKILL and the PID
-    int PIDD, SIGKILL,xx;
-    while (InFile.peek() != EOF)
-    {
-        InFile >> PIDD >> SIGKILL;
-        
-    }
+    //int PIDD, SIGKILL;
+    //InFile >> PIDD;
+    //PIDs.InsertBeg(PIDD);
+    //InFile >> SIGKILL;
+    //SIGs.InsertBeg(SIGKILL);
 
-    InFile.close();
+    //while (!InFile.eof())
+    //{
+    //    InFile >> PIDD >> SIGKILL;
+    //        PIDs.InsertEnd(PIDD);
+    //        SIGs.InsertEnd(SIGKILL);     
+    //}
 
 }
 void Schudeler::Run()
 {
-    cout << "Choose Input File: " << endl;
     LoadInput();
     
     char x = 'y';
@@ -146,26 +159,15 @@ void Schudeler::Run()
 
         Simulate();
         Allocate();
+
         pUI->updateUI(timestep, pArr, BlockedList, TerminatedList);
-        
-        
-        
-        
-        cout << "Press y to move to next step! " << endl;
-        cin >> x;
-
-        
-
-
-        timestep++;        
-        
-
+        pUI->input();
+        //cin >> x;
+        timestep++;
         
     }
 
 }
-
-
 
 //Move from processor to another processor
 //template<typename A, typename B>
@@ -176,29 +178,9 @@ void Schudeler::Run()
 //    New.addtoready(p);
 //}
 
-
-void Schudeler::MoveToTerminated(process *p)
+void Schudeler::Terminate(process *p)
 {
     TerminatedList.enqueue(p);
-}
-
-void Schudeler::PrintInfo()
-{
-
-
-    cout << "--------------------------- RDY processes ---------------------------" << endl;
-    cout << "Processor 1 [FCFS]: 0 RDY: " << endl; //print each ID of the RDY lists
-    cout << "Processor 2 [SJF]: 0 RDY" << endl;  // print no. of ready in each processor
-    cout << "Processor 3 [RR] : 0 RDY " << endl;
-
-    cout << "--------------------------- BLK processes ---------------------------" << endl;
-    cout << BlockedList.getCount() << " BLK: " << endl; //print total blocked processes with their ID's
-
-    cout << "--------------------------- RUN processes ---------------------------" << endl;
-   // cout << "3 RUN " << endl; // print total running process with their ID's and processor ex: 21 (p3)
-
-    cout << "--------------------------- TRM processes ---------------------------" << endl;
-    cout << TerminatedList.getCount() <<" TRM: " << endl; // print each process ID
 }
 
 
@@ -207,40 +189,42 @@ void Schudeler::Simulate()
 {
     process* p;
     srand(time(0));
-
+    int *rrnum = new int;
     for (int i = 0; i < processornum; i++)
     {
 
-
+        
         //Generate Random Number
         int rnumber = rand() % 100 + 1;
-
-        //Check if randomized number is within range
-        if (rnumber > 60 || (rnumber > 15 && rnumber < 20) || (rnumber > 30 && rnumber < 50))
-            continue;
         
-        //Get Running Process
-         p = pArr[i]->getrun();
+        //Check if randomized number is within range
+        if (rnumber > 60 || (rnumber > 15 && rnumber < 20) || (rnumber > 30 && rnumber < 50) || (20 < rnumber && rnumber < 30))
+            continue;
 
-         //Check if runnging process is not NULL
+        //Get Running Process
+         p = pArr[i]->changerun(timestep);
+
+         //Check if running process is not NULL
          if (!p)
             continue;
-       
+
 
         //Cases
-        if (1 < rnumber && rnumber < 15)
+        if (1 <= rnumber && rnumber <= 15)
         {
+            *rrnum = rnumber;
             BlockedList.enqueue(p);
         }
-        else if (20 < rnumber && rnumber < 30)
+        //else if (20 < rnumber && rnumber < 30) // WONT WORK BECAUSE IT TAKES THE RUN AND ADD IT TO READY AND READY FUNC MAKES THE PROCESS HEAD TO RUN
+        //{
+        //    pArr[i]->addtoready(p,timestep);
+        //}
+        else if (50 <= rnumber && rnumber <= 60)
         {
-            pArr[i]->addtoready(p,timestep);
-        }
-        else if (50 < rnumber && rnumber < 60)
-        {
+            *rrnum = rnumber;
             TerminatedList.enqueue(p);
-        }
 
+        }
 
     }
    
@@ -248,11 +232,17 @@ void Schudeler::Simulate()
     if (BlockedList.isEmpty())
        return;
 
+    srand(timestep);
     //Case 2
+
     int rnumber2 = rand() % 100 + 1;
+    if (rnumber2 <= 10 && *rrnum > 1 && *rrnum <= 15)
+        return;
+
     if (rnumber2 <= 10)
     {
             BlockedList.dequeue(p);
+            TerminatedList.enqueue(p);
     }
 
 }
@@ -281,5 +271,25 @@ void Schudeler::Allocate()
         NewList.dequeue(q);
         //recursive call again to see if multiple processes has the same timestep
         Allocate();  
+}
+
+Schudeler::~Schudeler()
+{
+    delete pUI;
+    pUI = NULL;
+
+    int counter = 0;
+    while (pArr[counter])
+    {
+        counter++;
+    }
+
+    for (int i = 0; i < counter; i++)
+    {
+        delete pArr[i];
+        pArr[i] = NULL;
+    }
+
+
 }
  
