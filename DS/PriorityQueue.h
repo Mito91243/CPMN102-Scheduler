@@ -1,6 +1,7 @@
 #pragma once
 #include "PriorityNode.h"
 #include"iostream"
+using namespace std;
 template <typename T>
 class PriorityQueue
 {
@@ -87,7 +88,7 @@ public:
 	{
 		if (!frontPtr)
 			return;
-		Node<T>* p = frontPtr;
+		PriorityNode<T>* p = frontPtr;
 		while (p) {
 			cout << *p->getItem();
 			p = p->getNext();
