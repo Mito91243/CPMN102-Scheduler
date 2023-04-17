@@ -16,12 +16,12 @@ public:
 	UI()
 	{
 	}
-	void updateUI(int &t,Processor* P[],Queue<process*> &B,Queue<process*> &T)
+	void updateUI(int &t,int &npr,Processor* P[],Queue<process*> &B,Queue<process*> &T)
 	{
 		system("cls");
 		cout << "Current Timestep:" << t << endl;
 		cout << '\t' << "RDY processes" << '\t' << endl;
-		for (int i = 0; i < sizeof(P); i++)
+		for (int i = 0; i < npr; i++)
 		{
 			cout << "processor " << i;
 			FCFS* F = dynamic_cast<FCFS*>(P[i]);
@@ -39,7 +39,7 @@ public:
 		cout << endl;
 		cout << '\t' << "RUN processes" << '\t' << endl;
 		int c = 0;
-		for (int i = 0; i < sizeof(P); i++)
+		for (int i = 0; i < npr; i++)
 		{
 			if (P[i]->getrun())
 			{
@@ -47,11 +47,11 @@ public:
 			}
 		}
 		cout << c << " RUN:";
-		for (int i = 0; i < sizeof(P[i]); i++)
+		for (int i = 0; i < npr; i++)
 		{
 			if (P[i]->getrun())
 			{
-				cout << P[i]->getrun()<<"(P"<<i<<") ";
+				cout << *(P[i]->getrun())<<"(P"<<i<<") ";
 			}
 		}
 		cout << endl;
@@ -64,7 +64,6 @@ public:
 	void input()
 	{
 		system("pause");
-		system("cls");
 	}
 
 
