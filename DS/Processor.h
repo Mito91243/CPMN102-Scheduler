@@ -3,15 +3,19 @@
 class Processor
 {
 protected:
-	process* running; // pointer to what the process is working on
+	process* running = nullptr; // pointer to what the process is working on
+	bool state = 0; //0 for IDLE, 1 for Busy
 public:
-	virtual process* changerun(int T) {
+	 process* changerun(int T) {
 		process* temp = running;
 		if (running != nullptr)
 		{
 			running = Schedulealgo();
-			if (running != nullptr) {
+			if (running == nullptr)
+				state = 0;
+			else {
 				running->setstate('RUN');
+				state = 1;
 				if (running->getRT() == 0) {
 					running->setRT(T);
 				}
@@ -19,8 +23,21 @@ public:
 		}
 		return temp;
 	}
+	void setstate(bool z) {
+		state = z;
+	}
+	void setrun() {
+		running = Schedulealgo();
+		if (running != nullptr)
+			state = 1;
+		else
+			state = 0;
+	}
+	bool isbusy() {
+		return state;
+	}
 	process* getrun() {
-	return running;
+		return running;
 	}
 	virtual process* isfinished(int T)
 	{
@@ -48,7 +65,7 @@ public:
 	// increments WON and checks if it is equal to its CT,and if yes changes the running pointer to the its next process sets its state to R and sets its RT  
 	//and returns a pointer to the finished one to be added to the termminated
 	//if no returns a nullptr
-	virtual void addtoready(process* pr,int T) = 0;//adds to the list
+	virtual void addtoready(process* pr, int T) = 0;//adds to the list
 	virtual process* Schedulealgo() = 0;
 	virtual process* needsIO(int T)
 	{
