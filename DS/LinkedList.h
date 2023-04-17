@@ -39,9 +39,11 @@ public:
 		}
 	}
 	////////////////////////////////////////////////////////////////////////
-	//Function: InsertBeg.
+	
+	// Function: InsertBeg.
 	// Creates a new node and adds it to the beginning of a linked list.
 	void InsertBeg(const T& data)
+
 	{
 		Node<T>* R = new Node<T>(data);
 		R->setNext(Head);
@@ -163,16 +165,9 @@ public:
 	T traverse(int r)
 	{
 		Node<T>* p = Head;
-		for (int i = 0; i = r; i++)
+		for (int i = 0; i < r; i++)
 		{
-			if (p->getNext() == nullptr)
-			{
-				p = Head;
-			}
-			else
-			{
 				p = p->getNext();
-			}
 		}
 		return p->getItem();
 	}
@@ -180,19 +175,11 @@ public:
   // count number of nodes in linked list
 	int count()
 	{
-		Node<T>* p = Head;
-		int count;
-		if (Head == nullptr)
-		{
-       return 0;
-		}
-		else 
-		{
-			count = 1;
-		}
-		while (Head->getNext() != nullptr)
-		{
+		int count = 0;
+		Node<T>* current = Head;
+		while (current != nullptr) {
 			count++;
+			current = current->getNext();
 		}
 		return count;
 	}
