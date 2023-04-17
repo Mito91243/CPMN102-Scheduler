@@ -4,19 +4,31 @@
 class SJF :public Processor
 {
 private:
-	int count;
-	process* running;
-	
 	PriorityQueue<process*>  sjfqueue;
-	int t;
 public:
-	SJF();
-	void  addtoready(process* pr, int T);
+	void  addtoready(process* pr, int T)
+	{
+		sjfqueue.enqueue(pr, pr->getCT() - pr->getWON());
+		pr->setstate('RDY');
+	}
 	
-	process* Schedulealgo();
-	process* getrun();
-	void printdata();
-	
-	
+	process* Schedulealgo()
+	{
+		process* p;
+		bool z=sjfqueue.dequeue(p);
+		if (z)
+			return p;
+		else
+			return nullptr;
+	}
+	process* getrun()
+	{
+		return running;
+	}
+	void printdata()
+	{
+		cout << sjfqueue.getCount() << "RDY:   ";
+		sjfqueue.printpq();
+	}
 };
 
