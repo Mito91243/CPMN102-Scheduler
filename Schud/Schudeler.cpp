@@ -21,7 +21,7 @@ Schudeler::Schudeler()
     processornum = 0;
     processnum = 0;
     pArr = NULL;
-
+    SigKill = NULL;
     pUI = new UI;
 
 }
@@ -34,7 +34,7 @@ void Schudeler::LoadInput()
     string p;
     cin >> p;
 
-    ifstream InFile("C:\\Users\\PC\\OneDrive\\Desktop\\" + p + ".txt");
+    ifstream InFile("C:\\Users\\HP User\\Desktop\\Project Data\\" + p + ".txt");
 
     //Checks if the File is opened
     if (InFile.fail())
@@ -130,40 +130,53 @@ void Schudeler::LoadInput()
 
 
     //Read the SIGKILL and the PID
-    //int PIDD, SIGKILL;
-    //InFile >> PIDD;
-    //PIDs.InsertBeg(PIDD);
-    //InFile >> SIGKILL;
-    //SIGs.InsertBeg(SIGKILL);
+    int PIDD, SIGKILL;
+    InFile >> PIDD;
+    LinkedList<int> pid;
+    LinkedList<int> sig;
 
-    //while (!InFile.eof())
-    //{
-    //    InFile >> PIDD >> SIGKILL;
-    //        PIDs.InsertEnd(PIDD);
-    //        SIGs.InsertEnd(SIGKILL);     
-    //}
+    pid.InsertBeg(PIDD);
+    InFile >> SIGKILL;
+    sig.InsertBeg(SIGKILL);
 
+    while (!InFile.eof())
+    {
+        InFile >> PIDD >> SIGKILL;
+            pid.InsertEnd(PIDD);
+            sig.InsertEnd(SIGKILL);     
+    }
+    
+    // allocate memory for the rows
+    int** arr = new int* [pid.count()];
+
+    //Allocate memory for the columns
+    for (int i = 0; i < pid.count(); ++i)
+        arr[i] = new int[pid.count()];
+
+    //Fill in the 2-D array
+    for (int i = 0; i < pid.count(); i++)
+    {
+        arr[i][0] = pid.traverse(i);
+        arr[i][1] = sig.traverse(i);
+    }
+
+    //Allocate it to data member and delete the 2 LinkedLists
+    SigKill = arr;
+    pid.DeleteAll();
+    sig.DeleteAll();
 }
 void Schudeler::Run()
 {
     LoadInput();
 
-    //char x = 'y';
-
     while (TerminatedList.getCount() != processnum)
-
     {
-        //Sleep(1000);
-
-        //cout << "Current Timestep :  " << timestep << endl;
 
         Simulate();
-
         Allocate();
-
-        pUI->updateUI(timestep,processornum, pArr, BlockedList, TerminatedList);
+        
+        pUI->updateUI(timestep, processornum, pArr, BlockedList, TerminatedList);
         pUI->input();
-        //cin >> x;
         timestep++;
 
     }
@@ -191,25 +204,27 @@ void Schudeler::Simulate()
     process* p;
     srand(time(0));
     int* rrnum = new int;
+
     for (int i = 0; i < processornum; i++)
     {
 
         FCFS* F = dynamic_cast<FCFS*>(pArr[i]);
-        if (F) 
+        if (F)
         {
             double d = static_cast<double>(rand() % RAND_MAX) / RAND_MAX;
             process* pr = F->randkill(d);
-            if(pr)
-            Terminate(pr);
+            if (pr)
+                Terminate(pr);
         }
 
         //Generate Random Number
         int rnumber = rand() % 100 + 1;
-        //cout << rnumber;
+
         //Check if randomized number is within range
-        if (rnumber > 60 || (rnumber > 15 && rnumber < 20) || (rnumber > 30 && rnumber < 50)) {
-            //(20 < rnumber && rnumber < 30)) 
-            if (!(pArr[i]->isbusy())) {
+        if (rnumber > 60 || (rnumber > 15 && rnumber < 20) || (rnumber > 30 && rnumber < 50))
+        {
+            if (!(pArr[i]->isbusy())) 
+            {
                 pArr[i]->setrun();
             }
             continue;
@@ -232,7 +247,7 @@ void Schudeler::Simulate()
             *rrnum = rnumber;
             BlockedList.enqueue(p);
         }
-        else if (20 <= rnumber && rnumber <= 30) // WONT WORK BECAUSE IT TAKES THE RUN AND ADD IT TO READY AND READY FUNC MAKES THE PROCESS HEAD TO RUN
+        else if (20 <= rnumber && rnumber <= 30)
         {
             double d = static_cast<double>(rand() % RAND_MAX) / RAND_MAX;
             int s = floor(d * processornum);
@@ -257,6 +272,8 @@ void Schudeler::Simulate()
     //Case 2
 
     int rnumber2 = rand() % 100 + 1;
+
+    //avoid dequeue and enqueueing in the same timestep
     if (rnumber2 <= 10 && *rrnum > 1 && *rrnum <= 15)
         return;
 
@@ -292,6 +309,7 @@ void Schudeler::Allocate()
 
     //remove the process from newlist
     NewList.dequeue(q);
+
     //recursive call again to see if multiple processes has the same timestep
     Allocate();
 }
@@ -301,17 +319,18 @@ Schudeler::~Schudeler()
     delete pUI;
     pUI = NULL;
 
-   // int counter = 0;
-   // while (pArr[counter])
-    //{
-      //  counter++;
-    //}
-
+     int counter = 0;
+     while (pArr[counter])
+     {
+         counter++;
+     }
+     //delete the processors
     for (int i = 0; i < processornum; i++)
     {
         delete pArr[i];
         pArr[i] = NULL;
     }
-
+    //delete the SigKill
+    //TO be written in phase2
 
 }
