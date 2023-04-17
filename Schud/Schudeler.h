@@ -23,8 +23,7 @@ private:
 	int processnum;
 	int timestep;
 	int Acounter;
-	LinkedList<int> PIDs;
-	LinkedList<int> SIGs;
+	int** SigKill;
 
 public:
 
