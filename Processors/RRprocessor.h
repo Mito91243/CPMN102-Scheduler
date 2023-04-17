@@ -8,33 +8,18 @@ class RRprocessor : public Processor
 private:
 	int timeslice;
 	Queue<process*> Q1;
-	process* running;
 	int TOP;
-	int foo;
 
 public:
 	
 	RRprocessor(int ts)
 	{
 		timeslice = ts;
-		running = nullptr;
 	}
 	virtual void addtoready(process* pr, int T)
 	{
-
-		if (running == nullptr) {
-			running = pr;
-			running->setstate('RUN');
-			if (running->getRT() == 0) 
-			{
-				running->setRT(T);
-			}
-			return;
-		}
-		else {
 			Q1.enqueue(pr);
-			running->setstate('RDY');
-		}
+			pr->setstate('RDY');
 	}
 	virtual process* Schedulealgo()
 	{
@@ -57,7 +42,7 @@ public:
 			}
 			else {
 				running = pr;
-				running->setstate('r');
+				running->setstate('RUN');
 				if (running->getRT() == 0) {
 					running->setRT(T);
 				}
@@ -89,7 +74,7 @@ public:
 			}
 			else {
 				running = pr;
-				running->setstate('r');
+				running->setstate('RUN');
 				if (running->getRT() == 0) {
 					running->setRT(T);
 				}
@@ -103,7 +88,7 @@ public:
 		return running;
 	}
 	
-	process* changerun(int T) 
+	/*process* changerun(int T)
 	{
 		process* temp = running;
 
@@ -119,4 +104,5 @@ public:
 		}
 		return temp;
 	}
+	*/
 };
