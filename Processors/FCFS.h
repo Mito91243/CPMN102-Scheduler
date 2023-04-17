@@ -8,32 +8,12 @@
 class FCFS : public Processor
 {
 private:
-	process* running;
 	LinkedList<process*> RL;
-
 public:
-	FCFS()
-	{
-
-	}
 	void addtoready(process* pr,int timestep)
 	{
-		if (running == nullptr) {
-			running = pr;
-			running->setstate('RUN');
-			if (running->getRT() == 0)
-			{
-				running->setRT(timestep);
-			}
-			return;
-		}
-		else
-		{
-		}
 		RL.InsertEnd(pr);
 		pr->setstate('RDY');
-
-
 	}
 	process* Schedulealgo()
 	{
@@ -43,13 +23,17 @@ public:
 
 			return nullptr;
 	}
-	process* randkill(int r)
+	process* randkill(double r)
 	{
-		int s = floor(r * (RL.count() + 1));
-		process* p = RL.traverse(s);
-		RL.DeleteNode(p);
-		p->setstate('TRM');
-		return p;
+		if (RL.count() != 0)
+		{
+			int s = floor(r * (RL.count()));
+			process* p = RL.traverse(s);
+			RL.DeleteNode(p);
+			p->setstate('TRM');
+			return p;
+		}
+		return nullptr;
 	}
 	void printdata()
 	{
@@ -60,7 +44,7 @@ public:
 	{
 		return running;
 	}
-	process* changerun(int T)
+	/*process* changerun(int T)
 	{
 		process* temp = running;
 
@@ -76,6 +60,7 @@ public:
 		}
 		return temp;
 	}
+	*/
 };
 
 #endif	
