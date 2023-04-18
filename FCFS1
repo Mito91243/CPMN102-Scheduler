@@ -28,7 +28,7 @@ public:
 			return pr->getPID() == p;
 
 	}
-	process* randkill(double r)
+	process* randkill(int r)
 	{
 		if (RL.count() != 0)
 		{
