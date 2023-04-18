@@ -184,6 +184,39 @@ public:
 		return count;
 	}
 
+	//searches for a given value in the list, returns true if found; false otherwise.
+	T Find(int &t)
+	{
+		if (Head != nullptr)
+		{
+			Node<T>* p = Head;
+			while (p != nullptr)
+			{
+				if (*(p->getItem()) == t)
+				{
+					return p->getItem();
+				}
+				p = p->getNext();
+			}
+		}
+		return nullptr;
+	}
+
+	/*T call(bool (*pidcheck)(T, int), int pid) {
+		Node<T>* curr = Head;
+		while (curr != nullptr)
+		{
+			if (pidcheck(curr->getItem(), pid)) 
+			{
+				return curr->getItem();
+				
+			}
+			curr = curr->getNext();
+		}
+		return nullptr;
+	}
+	*/
+
 
 };
 
