@@ -204,17 +204,17 @@ void Schudeler::Simulate()
     process* p;
     srand(time(0));
     int* rrnum = new int;
-
+    double d = static_cast<double>(rand() % RAND_MAX) / RAND_MAX;
+    int s = floor(d * processnum)+1;
     for (int i = 0; i < processornum; i++)
     {
-
         FCFS* F = dynamic_cast<FCFS*>(pArr[i]);
-        if (F)
+        if (F) 
         {
-            double d = static_cast<double>(rand() % RAND_MAX) / RAND_MAX;
-            process* pr = F->randkill(d);
-            if (pr)
-                Terminate(pr);
+            //double d = static_cast<double>(rand() % RAND_MAX) / RAND_MAX;
+            process* pr = F->randkill(s);
+            if(pr)
+            Terminate(pr);
         }
 
         //Generate Random Number
@@ -259,9 +259,9 @@ void Schudeler::Simulate()
             TerminatedList.enqueue(p);
 
         }
-        if (!(pArr[i]->isbusy())) {
-            pArr[i]->setrun();
-        }
+        //if (!(pArr[i]->isbusy())) {
+          //  pArr[i]->setrun();
+        //}
     }
 
     //check if blockedList is empty
