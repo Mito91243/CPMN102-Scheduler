@@ -204,15 +204,15 @@ void Schudeler::Simulate()
     process* p;
     srand(time(0));
     int* rrnum = new int;
-    double d = static_cast<double>(rand() % RAND_MAX) / RAND_MAX;
-    int s = floor(d * processnum)+1;
+    double d1 = static_cast<double>(rand() % RAND_MAX) / RAND_MAX;
+    int s1 = floor(d1 * processnum)+1;
     for (int i = 0; i < processornum; i++)
     {
         FCFS* F = dynamic_cast<FCFS*>(pArr[i]);
         if (F) 
         {
             //double d = static_cast<double>(rand() % RAND_MAX) / RAND_MAX;
-            process* pr = F->randkill(s);
+            process* pr = F->randkill(s1);
             if(pr)
             Terminate(pr);
         }
@@ -249,9 +249,10 @@ void Schudeler::Simulate()
         }
         else if (20 <= rnumber && rnumber <= 30)
         {
-            double d = static_cast<double>(rand() % RAND_MAX) / RAND_MAX;
-            int s = floor(d * processornum);
-            pArr[s]->addtoready(p, timestep);
+            srand(i);
+            double d2 = static_cast<double>(rand() % RAND_MAX) / RAND_MAX;
+            int s2 = floor(d2 * processornum);
+            pArr[s2]->addtoready(p, timestep);
         }
         else if (50 <= rnumber && rnumber <= 60)
         {
@@ -280,9 +281,9 @@ void Schudeler::Simulate()
     if (rnumber2 < 10)
     {
         BlockedList.dequeue(p);
-        double d = static_cast<double>(rand() % RAND_MAX) / RAND_MAX;
-        int s = floor(d * processornum);
-        pArr[s]->addtoready(p, timestep);
+        double d3 = static_cast<double>(rand() % RAND_MAX) / RAND_MAX;
+        int s3 = floor(d3 * processornum);
+        pArr[s3]->addtoready(p, timestep);
     }
 
 }
