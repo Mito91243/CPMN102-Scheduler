@@ -60,7 +60,19 @@ public:
 		return true;
 
 	}
-	bool peekFront(T& frntEntry) const
+	void printpq()
+	{
+		if (!frontPtr)
+			return;
+		PriorityNode<T>* p = frontPtr;
+		while (p) {
+			cout << *p->getItem();
+			p = p->getNext();
+		}
+
+	}
+
+	/*bool peekFront(T& frntEntry) const
 	{
 		if (isEmpty())
 			return false;
@@ -84,16 +96,6 @@ public:
 		}
 		return Arr;
 	}
-	void printpq()
-	{
-		if (!frontPtr)
-			return;
-		PriorityNode<T>* p = frontPtr;
-		while (p) {
-			cout << *p->getItem();
-			p = p->getNext();
-		}
+	*/
 
-	}
-	
 };
