@@ -7,7 +7,7 @@ class Queue
 {
 private:
 	Node<T>* frontPtr;
-	Node<T>* backPtr;
+	//Node<T>* backPtr;
 	int count;
 public:
 	Queue();
@@ -16,7 +16,7 @@ public:
 	bool enqueue(const T& newEntry);
 	bool dequeue(T& frntEntry);
 	bool peekFront(T& frntEntry)  const;
-	T* toArray();	//returns array of T (array if items)
+	//T* toArray();	//returns array of T (array if items)
 	void printq();
 	~Queue();
 };
@@ -31,7 +31,7 @@ template <typename T>
 Queue<T>::Queue()
 {
 	frontPtr = nullptr;
-	backPtr = nullptr;
+	//backPtr = nullptr;
 	count = 0;
 
 }
@@ -66,12 +66,17 @@ template <typename T>
 bool Queue<T>::enqueue(const T& newEntry)
 {
 	Node<T>* newNodePtr = new Node<T>(newEntry);
+	
 	// Insert the new node
 	if (isEmpty())
 		frontPtr = newNodePtr; // The queue is empty
-	else
+	else {
+		Node<T>* backPtr = frontPtr;
+		while (backPtr->getNext() != nullptr)
+			backPtr = backPtr->getNext();
 		backPtr->setNext(newNodePtr); // The queue was not empty
-	backPtr = newNodePtr; // New node is at back
+	}
+	//backPtr = newNodePtr; // New node is at back
 	count++;
 	return true;
 } // end enqueue
@@ -96,8 +101,8 @@ bool Queue<T>::dequeue(T& frntEntry)
 	frntEntry = frontPtr->getItem();
 	frontPtr = frontPtr->getNext();
 	// Queue is not empty; remove front
-	if (nodeToDeletePtr == backPtr)	 // Special case: one node in queue
-		backPtr = nullptr;
+	//if (nodeToDeletePtr == backPtr)	 // Special case: one node in queue
+		//backPtr = nullptr;
 
 	// Free memory reserved by the dequeued node
 	delete nodeToDeletePtr;
@@ -106,7 +111,18 @@ bool Queue<T>::dequeue(T& frntEntry)
 	return true;
 
 }
+template <typename T>
+void Queue<T>::printq()
+{
+	if (!frontPtr)
+		return;
+	Node<T>* p = frontPtr;
+	while (p) {
+		cout << *p->getItem();
+		p = p->getNext();
+	}
 
+}
 /////////////////////////////////////////////////////////////////////////////////////////
 
 /*
@@ -140,7 +156,7 @@ Function: toArray
 returns an array of "T"
 Output: count: the length of the returned array (zero if Queue is empty)
 returns: The array of T. (nullptr if Queue is empty)
-*/
+
 
 template <typename T>
 T* Queue<T>::toArray()
@@ -156,16 +172,6 @@ T* Queue<T>::toArray()
 		p = p->getNext();
 	}
 	return Arr;
-}
-template <typename T>
-void Queue<T>::printq()
-{
-	if (!frontPtr)
-		return;
-	Node<T>* p = frontPtr;
-	while (p) {
-		cout << *p->getItem();
-		p = p->getNext();
-	}
+}*/
 
-}
+
