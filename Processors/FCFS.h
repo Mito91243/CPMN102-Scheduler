@@ -23,13 +23,22 @@ public:
 
 			return nullptr;
 	}
-	process* randkill(double r)
+	static bool pidcheck(process* pr, int p)
+	{
+			return pr->getPID() == p;
+
+	}
+	
+	
+	process* randkill(int r)
 	{
 		if (RL.count() != 0)
 		{
-			int s = floor(r * (RL.count()));
-			process* p = RL.traverse(s);
+			process* p = RL.Find(r);
+			//int s = floor(r * (RL.count()));
+			//process* p = RL.traverse(s);
 			RL.DeleteNode(p);
+			if(p)
 			p->setstate('TRM');
 			return p;
 		}
@@ -44,6 +53,7 @@ public:
 	{
 		return running;
 	}
+
 	/*process* changerun(int T)
 	{
 		process* temp = running;
