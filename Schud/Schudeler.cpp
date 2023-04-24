@@ -290,48 +290,50 @@ void Schudeler::Simulate()
 
 void Schudeler::Allocate()
 {
+    int min = 9999;
+    int max = 0;
+    Processor* maxQueue= nullptr;
+    Processor* minQueue = nullptr;
     process* p, * q;
-
-    if (NewList.isEmpty())
-        return;
-
-    NewList.peekFront(p);
-
-    //Once counter reaches processornum reset
-    if (Acounter == processornum)
-        Acounter = 0;
-
-
-    //check if process in newList has arrival time as timestep
-    if (!p || p->getAT() != timestep)
-        return;
-
-    pArr[Acounter++]->addtoready(p, timestep);
-
-    //remove the process from newlist
-    NewList.dequeue(q);
-
-    //recursive call again to see if multiple processes has the same timestep
-    Allocate();
-}
-
-Schudeler::~Schudeler()
-{
-    delete pUI;
-    pUI = NULL;
-
-     int counter = 0;
-     while (pArr[counter])
-     {
-         counter++;
-     }
-     //delete the processors
+    
+    //Get Longest and shortest Queue
     for (int i = 0; i < processornum; i++)
     {
-        delete pArr[i];
-        pArr[i] = NULL;
+        
+        if (pArr[i]->GetTimer() < min)
+        {
+            minQueue = pArr[i];
+            min = pArr[i]->GetTimer();
+        }
+        if (pArr[i]->GetTimer() > max)
+        {
+            maxQueue = pArr[i];
+            max = pArr[i]->GetTimer();
+        }
     }
-    //delete the SigKill
-    //TO be written in phase2
 
+
+    //condition executes when timestep is = or is a multiple of STL
+    //Only check after first timestep cause 0%STL is runtime error 
+    if(timestep != 0 && (timestep % STL) ==0 )
+        LoadBalancing(minQueue, maxQueue);
+    
+
+    //Normal ALlocation for Processor with shortest queue
+        if (NewList.isEmpty())
+            return;
+    
+        NewList.peekFront(p);
+    
+        //check if process in newList has arrival time as timestep
+        if (!p || p->getAT() != timestep)
+            return;
+
+        minQueue->addtoready(p, timestep);
+
+        //remove the process from newlist
+        NewList.dequeue(q);
+
+        //recursive call again to see if multiple processes has the same timestep
+        Allocate();
 }
