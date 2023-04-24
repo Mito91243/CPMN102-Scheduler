@@ -58,8 +58,8 @@ void Schudeler::LoadInput()
     InFile >> RRslice;
 
     //Read RTF,MAXW,STL,FORK PROBABILITY
-    int RTF, MaxW, STL, Fork;
-    InFile >> RTF >> MaxW >> STL >> Fork;
+    int  Fork;
+    InFile >> RTF >> MAXW >> STL >> Fork;
 
 
     int c = 0;
@@ -370,4 +370,123 @@ void Schudeler::LoadBalancing(Processor* minQ, Processor* maxQ)
 //            
 //        }
 //    }
+//}
+
+void Schudeler::Output()
+//{
+//    ofstream OutFile;
+//    process* q = nullptr;
+//    
+//    OutFile.open("outputzz.txt");
+//    OutFile << "  TT       " << "PID     " << "AT      " << "CT      " << "IO_D " << "       WT" << "      RT" << "      TRT" << endl;
+//
+//    int size = TerminatedList.getCount();
+//
+//
+//    int* arrS = new int[size];
+//    process** prArr = new process* [size];
+//                              
+//    
+//    for (int i = 0; i < size;i++)
+//    {
+//        TerminatedList.dequeue(q);
+//        arrS[i] = q->getCT();
+//        prArr[i] = q;
+//    }
+//
+//    //This struct has 3 functions that make quick sorting 
+//    struct Sort
+//    {
+//        void swap(int &a,int &b)
+//        {
+//            int temp = a;
+//            a = b;
+//            b = temp;
+//
+//        }
+//
+//        int pivot(int* arrS, int start, int end)
+//        {
+//            int piv= arrS[end];
+//            int indx = start;
+//            
+//            //Makes all numbers less than pivot on the it's left
+//            for (int i = start; i < end; i++)
+//            {
+//                if (arrS[i] <= piv)
+//                {
+//                    swap(arrS[i], arrS[indx]);
+//                    indx++;
+//                }
+//            }
+//
+//            swap(arrS[indx], arrS[end]);
+//            return indx;
+//
+//        }
+//
+//        void QuickSort(int* arrS, int start, int end)
+//        {
+//            //always execute unless start becomes negative 
+//            if (start < end)
+//            {
+//                //break array into 2 parts
+//                int p = pivot(arrS, start, end);
+//                //Recursive calling for left segment
+//                QuickSort(arrS, 0, p - 1);
+//                //Recursive calling for right segment
+//                QuickSort(arrS, p + 1, end);
+//            }
+//
+//        }
+//        
+//    };
+//    Sort S;
+//
+//     S.QuickSort(arrS, 0, size-1);
+//
+//     //cout Each process in the output file 
+//     for (int i = 0; i < size; i++)
+//     {
+//         for (int j = 0; j < size; j++)
+//         {
+//             if (prArr[j]->getCT() == arrS[i])
+//             {
+//                 //printing details of each process
+//                 OutFile << "  " << prArr[j]->getTT() << "        " << prArr[j]->getPID() << "       " << prArr[j]->getAT() << "      " << prArr[j]->getCT() << "      ";
+//
+//                 //This part handles if a process have multiple IO_D's to print them
+//                 int* arr= prArr[j]->getIO_D();
+//                 int zz=0;
+//                 while (arr[zz] > 0)
+//                 {
+//                     OutFile << arr[zz++] << " ";
+//                 }
+//                 arr = NULL;
+//
+//                 //printing details of each process
+//                 OutFile << "           " << prArr[j]->getWT() << "      " << prArr[j]->getRT() << "       " << prArr[j]->getTRT() << endl;
+//             }
+//         }
+//     }
+//
+//     //delete sorted array of TT 
+//         delete[]arrS;
+//         arrS = NULL;
+//
+//         OutFile << endl << endl <<"Processes: " << size << endl;
+//
+//         int sumRT = 0;
+//         int sumWT = 0;
+//         int sumTRT = 0;
+//
+//         for (int i = 0; i < size; i++)
+//         {
+//             sumWT = sumWT + prArr[i]->getWT();
+//             sumRT = sumRT + prArr[i]->getRT();
+//             sumTRT = sumTRT + prArr[i]->getTRT();
+//         }
+//
+//         OutFile << "Avg WT = " << sumWT / size << "     " << "Avg RT = " << sumRT / size << "     " << "Avg TRT = " << sumTRT / size << endl;
+//
 //}
