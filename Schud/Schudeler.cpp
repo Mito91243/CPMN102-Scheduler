@@ -337,3 +337,18 @@ void Schudeler::Allocate()
         //recursive call again to see if multiple processes has the same timestep
         Allocate();
 }
+
+void Schudeler::LoadBalancing(Processor* minQ, Processor* maxQ)
+{
+    //get the ratio between longest queue and shortest queue with respect to CT
+    int stl = (maxQ->GetTimer() - minQ->GetTimer()) / maxQ->GetTimer();
+
+    if (stl >= 0.4)
+    {
+        process* p = maxQ->Schedulealgo();
+        minQ->addtoready(p,timestep);                                                           
+    }
+
+    //Recursive call to check that the updated Load Balance is under 0.4
+    LoadBalancing(minQ,maxQ);
+}
