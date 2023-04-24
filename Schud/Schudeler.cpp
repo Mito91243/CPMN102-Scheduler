@@ -352,3 +352,22 @@ void Schudeler::LoadBalancing(Processor* minQ, Processor* maxQ)
     //Recursive call to check that the updated Load Balance is under 0.4
     LoadBalancing(minQ,maxQ);
 }
+
+//void Schudeler::Migration()
+//{
+//    for (int i = 0; i < processornum; i++)
+//    {
+//        FCFS* F = dynamic_cast<FCFS*>(pArr[i]);
+//        RRprocessor* R = dynamic_cast<RRprocessor*>(pArr[i]);
+//
+//        if (F)
+//        {
+//
+//        }
+//
+//        if (R)
+//        {
+//            
+//        }
+//    }
+//}
