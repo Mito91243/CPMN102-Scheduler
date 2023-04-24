@@ -22,8 +22,11 @@ private:
 	int processornum;
 	int processnum;
 	int timestep;
-	int Acounter;
 	int** SigKill;
+
+	int STL;
+	int RTF;
+	int MAXW;
 
 public:
 
