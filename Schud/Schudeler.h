@@ -37,6 +37,7 @@ public:
 	void Run();
 	void Allocate();
 	void Simulate();
+	void LoadBalancing(Processor*min,Processor*max);
 	~Schudeler();
 };
 
