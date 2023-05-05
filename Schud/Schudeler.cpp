@@ -196,93 +196,191 @@ void Schudeler::Terminate(process* p)
     TerminatedList.enqueue(p);
 }
 
+void Schudeler::incIO()
+{
+    if (BlockedList.isEmpty()) {
+        return;  // Base case: if the BlockedList is empty, stop the recursion
+    }
+
+    process* p;
+    BlockedList.dequeue(p);
+
+    incIO();  // Recursive call to process the rest of the queue
+
+    BlockedList.enqueue(p);  // Enqueue the dequeued process back into the queue
+
+    // Move all the elements from the front of the queue to the back,
+    // except for the process that was just dequeued and enqueued back
+    // (this ensures that the original order is maintained)
+    int size = BlockedList.getCount();
+    for (int i = 0; i < size - 1; i++) {
+        BlockedList.dequeue(p);
+        BlockedList.enqueue(p);
+    }
+
+    p->incrementIOT();  // Increment the I/O time of the process
+}
+
+
+
+void Schudeler::shortestqueue(process* p)
+{
+    int minWT = 100000000000000000;
+    int index = 0;
+    for (int i = 0; i < processornum; i++)
+    {
+        if (p->getischild())
+        {
+            FCFS* F = dynamic_cast<FCFS*>(pArr[i]);
+            if (pArr[i]->getWT() < minWT && pArr[i]->isbusy() != 'S' && F)
+            {
+                minWT = pArr[i]->getWT();
+                index = i;
+            }
+        }
+        else
+        {
+            if (pArr[i]->getWT() < minWT && pArr[i]->isbusy() != 'S')
+            {
+                minWT = pArr[i]->getWT();
+                index = i;
+            }
+        }
+    }
+    pArr[index]->addtoready(p);
+}
+
+void Schudeler::orph(process* p)
+{
+        if (p->getlchild())
+        {
+            bool found = false;
+            for (int j = 0; j < processornum; j++)
+            {
+                FCFS* F = dynamic_cast<FCFS*>(pArr[j]);
+                if (F)
+                {
+                    found += F->orphan(p->getlchild(), timestep);
+                }
+            }
+            if (found)
+            {
+                Terminate(p->getlchild());
+                orph(p->getlchild());
+            }
+        }
+        if (p->getrchild())
+        {
+            bool found = false;
+            for (int j = 0; j < processornum; j++)
+            {
+                FCFS* F = dynamic_cast<FCFS*>(pArr[j]);
+                if (F)
+                {
+                    found += F->orphan(p->getrchild(), timestep);
+                }
+            }
+            if (found)
+            {
+                Terminate(p->getrchild());
+                orph(p->getrchild());
+            }
+        }
+}
+
 
 
 void Schudeler::Simulate()
 {
     process* p;
-    srand(time(0));
-    int* rrnum = new int;
-    double d1 = static_cast<double>(rand() % RAND_MAX) / RAND_MAX;
-    int s1 = floor(d1 * processnum)+1;
+    srand(time(NULL));
     for (int i = 0; i < processornum; i++)
     {
+        if (pArr[i]->isbusy()=='I')
+        {
+            pArr[i]->setrun();
+        }
+
+        int rnumber = rand() % 100 + 1;
+        if (rnumber < 3)
+        {
+            pArr[i]->setstate('S');
+            p = pArr[i]->changerun();
+            while (p)
+            {
+                shortestqueue(p);
+                p = pArr[i]->changerun();
+            }
+        }
+
+        RRprocessor* R = dynamic_cast<RRprocessor*>(pArr[i]);
+        if (R)
+        {
+            p = R->reachedts(timestep);
+            if (p)
+            {
+                shortestqueue(p);
+            }
+        }
+
+        p = pArr[i]->isfinished(timestep);
+        if (p)
+        {
+            Terminate(p);
+            orph(p);
+        }
+
+
+        if (pArr[i]->isbusy()=='B')
+        {
+            p = pArr[i]->needsIO(timestep);
+            if (p)
+            {
+                BlockedList.enqueue(p);
+            }
+        }
+
         FCFS* F = dynamic_cast<FCFS*>(pArr[i]);
         if (F) 
         {
-            //double d = static_cast<double>(rand() % RAND_MAX) / RAND_MAX;
-            process* pr = F->randkill(s1);
-            if(pr)
-            Terminate(pr);
-        }
-
-        //Generate Random Number
-        int rnumber = rand() % 100 + 1;
-
-        //Check if randomized number is within range
-        if (rnumber > 60 || (rnumber > 15 && rnumber < 20) || (rnumber > 30 && rnumber < 50))
-        {
-            if (!(pArr[i]->isbusy())) 
+            for (int j = 0; j < nSK; j++)
             {
-                pArr[i]->setrun();
+                if (SigKill[j][0] == timestep)
+                {
+                    process* k= F->kill(SigKill[j][1],timestep);
+                    if (k)
+                    {
+                        Terminate(k);
+                        orph(k);
+                    }
+                }
             }
-            continue;
-        }
-
-        //Get Running Process
-        p = pArr[i]->changerun(timestep);
-
-        //Check if running process is not NULL
-        if (!p) {
-            if (!(pArr[i]->isbusy())) {
-                pArr[i]->setrun();
+            if (rnumber < 7 && F->isbusy()=='B')
+            {
+                p = F->fork();
+                if (p)
+                {
+                    process* temp = new process(timestep, ++processnum, (p->getCT() - p->getWON()), 0);
+                    p->setparent(temp);
+                    temp->setischild();
+                    shortestqueue(temp);
+                }
             }
-            continue;
         }
 
-        //Cases
-        if (1 <= rnumber && rnumber <= 15)
-        {
-            *rrnum = rnumber;
-            BlockedList.enqueue(p);
-        }
-        else if (20 <= rnumber && rnumber <= 30)
-        {
-            srand(i);
-            double d2 = static_cast<double>(rand() % RAND_MAX) / RAND_MAX;
-            int s2 = floor(d2 * processornum);
-            pArr[s2]->addtoready(p, timestep);
-        }
-        else if (50 <= rnumber && rnumber <= 60)
-        {
-            *rrnum = rnumber;
-            TerminatedList.enqueue(p);
-
-        }
-        //if (!(pArr[i]->isbusy())) {
-          //  pArr[i]->setrun();
-        //}
     }
 
-    //check if blockedList is empty
-    if (BlockedList.isEmpty())
-        return;
-
-    srand(timestep);
-    //Case 2
-
-    int rnumber2 = rand() % 100 + 1;
-
-    //avoid dequeue and enqueueing in the same timestep
-    if (rnumber2 <= 10 && *rrnum > 1 && *rrnum <= 15)
-        return;
-
-    if (rnumber2 < 10)
+    process* B=nullptr;
+    if (BlockedList.peekFront(B))
     {
-        BlockedList.dequeue(p);
-        double d3 = static_cast<double>(rand() % RAND_MAX) / RAND_MAX;
-        int s3 = floor(d3 * processornum);
-        pArr[s3]->addtoready(p, timestep);
+        B->incrementIOT();
+        if (B->getIO_D() == B->getIOT())
+        {
+            B->incrementIO();
+            B->resetIOT();
+            BlockedList.dequeue(B);
+            shortestqueue(B);
+        }
     }
 
 }
