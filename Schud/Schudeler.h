@@ -27,6 +27,7 @@ private:
 	int STL;
 	int RTF;
 	int MAXW;
+	int nSK;//no of sigkills
 
 public:
 
@@ -41,6 +42,9 @@ public:
 	void Allocate();
 	void Simulate();
 	void LoadBalancing(Processor*min,Processor*max);
+	void incIO();
+	void shortestqueue(process* p);
+	void orph(process* p);
 	~Schudeler();
 };
 
