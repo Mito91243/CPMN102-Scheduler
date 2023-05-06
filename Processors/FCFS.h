@@ -10,7 +10,7 @@ class FCFS : public Processor
 private:
 	LinkedList<process*> RL;
 public:
-	void addtoready(process* pr,int timestep)
+	void addtoready(process* pr)
 	{
 		RL.InsertEnd(pr);
 		pr->setstate('RDY');
@@ -30,19 +30,30 @@ public:
 	}
 	
 	
-	process* randkill(int r)
+	process* kill(int r,int t)
 	{
-		if (RL.count() != 0)
+		process* p = nullptr;
+		if (running)
 		{
-			process* p = RL.Find(r);
-			//int s = floor(r * (RL.count()));
-			//process* p = RL.traverse(s);
-			RL.DeleteNode(p);
-			if(p)
-			p->setstate('TRM');
-			return p;
+			if (*running == r)
+			{
+				p = running;
+				running = Schedulealgo();
+				if (running)
+				{
+					running->setstate('RUN');
+					running->setRT(t);
+				}
+			}
+			else if (RL.count() != 0)
+			{
+				p = RL.Find(r);
+				RL.DeleteNode(p);
+			}
+			if (p)
+				p->setstate('TRM');
 		}
-		return nullptr;
+		return p;
 	}
 	void printdata()
 	{
@@ -53,24 +64,39 @@ public:
 	{
 		return running;
 	}
-
-	/*process* changerun(int T)
+	
+	process* fork()
 	{
-		process* temp = running;
-
-		if (running != nullptr)
+		if (running->getlchild() && running->getrchild())
 		{
-			running = Schedulealgo();
-			if (running != nullptr) {
-				running->setstate('RUN');
-				if (running->getRT() == 0) {
-					running->setRT(T);
-				}
-			}
+			return nullptr;
 		}
-		return temp;
+		return running;
 	}
-	*/
+
+	bool orphan(process* p,int t)
+	{
+		if (running == p)
+		{
+			running->setstate('ORPH');
+			running = Schedulealgo();
+			if (running)
+			{
+				running->setstate('RUN');
+				running->setRT(t);
+				state = 'B';
+			}
+			else
+				state = 'I';
+			return true;
+		}
+		if (RL.DeleteNode(p))
+		{
+			p->setstate('ORPH');
+			return true;
+		}
+		return false;
+	}
 };
 
 #endif	
