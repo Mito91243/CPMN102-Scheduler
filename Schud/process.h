@@ -19,8 +19,10 @@ private:
 	int WT;
 	int WON;  // time any processor has been working on this process, gets incremented every time step ny is finished of each processor
 	char state;
-	bool parent;
-	process* child;
+	bool ischild;//true if process is a child false otherwise
+	process* lch;
+	process* rch;
+	int IOT;
 public:
 	process(int A, int I, int C, int NO);
 	void setRT(int T);
@@ -43,11 +45,16 @@ public:
 	int getIO();
 	int getNIO();
 	char getstate();
-	bool isparent();
-	process* getchild();
 	int getIO_R();
 	int getIO_D();
 	int getWON();
+	process* getlchild();
+	process* getrchild();
+	void incrementIOT();
+	int getIOT();
+	void resetIOT();
+	void setischild();
+	bool getischild();
 	~process();
 	friend ostream& operator << (ostream& out, const process& p) {
 		out << p.PID << "  ";
