@@ -16,7 +16,7 @@ public:
 	{
 		timeslice = ts;
 	}
-	virtual void addtoready(process* pr, int T)
+	virtual void addtoready(process* pr)
 	{
 			Q1.enqueue(pr);
 			pr->setstate('RDY');
@@ -32,20 +32,27 @@ public:
 	}
 	process* reachedts(int T)
 	{
-		TOP++;
+		if(running)
+		{ 
+			TOP++;
+		}
 		if (TOP == timeslice) {
 			process* finished = running;
 			process* pr;
 			bool z = Q1.dequeue(pr);
 			if (!z) {
+				state = 'I';
+				running = nullptr;
 				return finished;
 			}
 			else {
+				state = 'B';
 				running = pr;
 				running->setstate('RUN');
 				if (running->getRT() == 0) {
 					running->setRT(T);
 				}
+				TOP = 0;
 				return finished;
 			}
 
@@ -62,47 +69,14 @@ public:
 		cout << Q1.getCount() << " RDY: ";
 		Q1.printq();
 	}
-
-	process* isfinished(int T) {
-		running->incrementWON();
-		if (running->getWON() == running->getCT()) {
-			process* finished = running;
-			process* pr;
-			bool z = Q1.dequeue(pr);
-			if (!z) {
-				return finished;
-			}
-			else {
-				running = pr;
-				running->setstate('RUN');
-				if (running->getRT() == 0) {
-					running->setRT(T);
-				}
-				return finished;
-			}
-		}
-		else return nullptr;
-	}
 	process* getrun()
 	{
 		return running;
 	}
-	
-	/*process* changerun(int T)
-	{
-		process* temp = running;
 
-		if (running != nullptr)
-		{
-			running = Schedulealgo();
-			if (running != nullptr) {
-				running->setstate('RUN');
-				if (running->getRT() == 0) {
-					running->setRT(T);
-				}
-			}
-		}
-		return temp;
+	int  getWT()
+	{
+		return Q1.sum();
 	}
-	*/
+	
 };
