@@ -15,6 +15,9 @@ process::process(int A, int I, int C, int NO)
 	RT = 0;
 	AIO_D = new int[NIO];
 	AIO_R = new int[NIO];
+	IOT = 0;
+	lch = nullptr;
+	rch = nullptr;
 	cout << "Process Created: " << endl;
 }
 void process::setRT(int T) {
@@ -33,8 +36,14 @@ void process::setstate(char a) {
 	state = a;
 }
 void process::setparent(process* ch) {
-	parent = true;
-	child = ch;
+	if (lch)
+	{
+		rch = ch;
+	}
+	else
+	{
+		lch = ch;
+	}
 }
 void process::AddIO_R(int x) {
 	AIO_R[countIOR] = x;
@@ -82,12 +91,6 @@ int process::getIO() {
 int process::getNIO() {
 	return NIO;
 }
-bool process::isparent() {
-	return parent;
-}
-process* process::getchild() {
-	return child;
-}
 int process::getWON() {
 	return WON;
 }
@@ -96,6 +99,32 @@ int process::getIO_R() {
 }
 int process::getIO_D() {
 	return AIO_D[nextIO];
+}
+process* process::getlchild() {
+	return lch;
+}
+process* process::getrchild() {
+	return rch;
+}
+void process::incrementIOT()
+{
+	IOT++;
+}
+int process::getIOT()
+{
+	return IOT;
+}
+void process::resetIOT()
+{
+	IOT = 0;
+}
+void process::setischild()
+{
+	ischild = 1;
+}
+bool process::getischild()
+{
+	return ischild;
 }
 process::~process() {
 	delete[]AIO_D;
