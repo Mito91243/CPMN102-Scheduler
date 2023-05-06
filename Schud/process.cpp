@@ -48,12 +48,10 @@ void process::setparent(process* ch) {
 void process::AddIO_R(int x) {
 	AIO_R[countIOR] = x;
 	countIOR++;
-	cout << "IOR added Successully" << endl;
 }
 void process::AddIO_D(int x) {
 	AIO_D[countIOD] = x;
 	countIOD++;
-	cout << "IOD added succefully" << endl;
 }
 void process::incrementIO() {
 	nextIO++;
