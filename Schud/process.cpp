@@ -124,6 +124,13 @@ bool process::getischild()
 {
 	return ischild;
 }
+bool process::operator ==(int k) 
+{
+	if (PID == k)
+		return true;
+	else
+		return false;
+}
 process::~process() {
 	delete[]AIO_D;
 	delete[]AIO_R;
