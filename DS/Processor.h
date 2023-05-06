@@ -4,36 +4,27 @@ class Processor
 {
 protected:
 	process* running = nullptr; // pointer to what the process is working on
-	bool state = 0; //0 for IDLE, 1 for Busy
+	char state = 'I'; //I for IDLE, B for Busy,S 
+	int n=5;//overheat time
+	int OT;//time spent overheating
 public:
-	 process* changerun(int T) {
+	 process* changerun() 
+	 {
 		process* temp = running;
-		if (running != nullptr)
-		{
-			running = Schedulealgo();
-			if (running == nullptr)
-				state = 0;
-			else {
-				running->setstate('RUN');
-				state = 1;
-				if (running->getRT() == 0) {
-					running->setRT(T);
-				}
-			}
-		}
+		running = Schedulealgo();
 		return temp;
-	}
-	void setstate(bool z) {
+	 }
+	void setstate(char z) {
 		state = z;
 	}
 	void setrun() {
 		running = Schedulealgo();
 		if (running != nullptr)
-			state = 1;
+			state = 'B';
 		else
-			state = 0;
+			state = 'I';
 	}
-	bool isbusy() {
+	char isbusy() {
 		return state;
 	}
 	process* getrun() {
@@ -41,6 +32,15 @@ public:
 	}
 	virtual process* isfinished(int T)
 	{
+		if (state == 'S')
+		{
+			OT++;
+			if (OT == n)
+			{
+				OT = 0;
+				state = 'I';
+			}
+		}
 		if (running != nullptr)
 		{
 			running->incrementWON();
@@ -48,12 +48,17 @@ public:
 			if (running->getWON() == running->getCT())
 			{
 				running = Schedulealgo();
-				running->setstate('RUN');
-				if (running != nullptr) {
+				if (running != nullptr) 
+				{
+					state = 'B';
 					running->setstate('RUN');
 					if (running->getRT() == 0) {
 						running->setRT(T);
 					}
+				}
+				else
+				{
+					state = 'I';
 				}
 				temp->setstate('TRM');
 				return temp;
@@ -65,24 +70,32 @@ public:
 	// increments WON and checks if it is equal to its CT,and if yes changes the running pointer to the its next process sets its state to R and sets its RT  
 	//and returns a pointer to the finished one to be added to the termminated
 	//if no returns a nullptr
-	virtual void addtoready(process* pr, int T) = 0;//adds to the list
+	virtual void addtoready(process* pr) = 0;//adds to the list
 	virtual process* Schedulealgo() = 0;
 	virtual process* needsIO(int T)
 	{
 		process* temp = running;
-		if (running->getWON() == running->getIO_R())
+		if (temp->getNIO() != 0)
 		{
-			running = Schedulealgo();
-			if (running != nullptr) {
-				running->setstate('RUN');
-				if (running->getRT() == 0) {
-					running->setRT(T);
+			if (running->getWON() == running->getIO_R())
+			{
+				running = Schedulealgo();
+				if (running != nullptr) {
+					state = 'B';
+					running->setstate('RUN');
+					if (running->getRT() == 0) {
+						running->setRT(T);
+					}
 				}
+				else
+				{
+					state = 'I';
+				}
+				temp->setstate('BLK');
+				return temp;
 			}
-			temp->setstate('BLK');
-			return temp;
 		}
-		else return nullptr;
+		return nullptr;
 	}
 	//checks if WON is equal to its next IO_R,and if yes changes the running pointer to the its next process sets its state to R and sets its RT
 	//and returns a pointer to the one that needs IO to be added to the blocked
