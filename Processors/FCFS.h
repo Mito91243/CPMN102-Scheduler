@@ -9,28 +9,38 @@ class FCFS : public Processor
 {
 private:
 	LinkedList<process*> RL;
+	int busytime;
+	int processTRT;
+
 public:
+
 	void addtoready(process* pr)
 	{
+		timeleft = timeleft + pr->getCT();
 		RL.InsertEnd(pr);
 		pr->setstate('RDY');
 	}
+
 	process* Schedulealgo()
 	{
-		process*p =  RL.DeleteFirst();
-		if (p)
+		process* p = RL.DeleteFirst();
+		
+		if(p)
+		{
+			timeleft = timeleft - p->getCT();
 			return p;
+		}
 
-			return nullptr;
+		return nullptr;
 	}
+
 	static bool pidcheck(process* pr, int p)
 	{
-			return pr->getPID() == p;
+		return pr->getPID() == p;
 
 	}
-	
-	
-	process* kill(int r,int t)
+
+	process* kill(int r, int t)
 	{
 		process* p = nullptr;
 		if (running)
@@ -48,23 +58,28 @@ public:
 			else if (RL.count() != 0)
 			{
 				p = RL.Find(r);
+
+
 				RL.DeleteNode(p);
+				
 			}
 			if (p)
 				p->setstate('TRM');
 		}
 		return p;
 	}
+
 	void printdata()
 	{
 		cout << RL.count() << " " << "RDY: ";
 		RL.PrintList();
 	}
+
 	process* getrun()
 	{
 		return running;
 	}
-	
+
 	process* fork()
 	{
 		if (running->getlchild() && running->getrchild())
@@ -74,7 +89,7 @@ public:
 		return running;
 	}
 
-	bool orphan(process* p,int t)
+	bool orphan(process* p, int t)
 	{
 		if (running == p)
 		{
@@ -91,11 +106,25 @@ public:
 			return true;
 		}
 		if (RL.DeleteNode(p))
-		{
+		{		
+			timeleft = timeleft + p->getCT();
 			p->setstate('ORPH');
 			return true;
 		}
 		return false;
+	}
+
+	int getIDLE(int& TotalTRT)
+	{
+		if (running != NULL)
+		{
+			busytime++;
+			processTRT = processTRT + running->getTRT();
+
+		}
+
+		TotalTRT = processTRT;
+		return busytime;
 	}
 };
 
