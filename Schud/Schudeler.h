@@ -14,7 +14,7 @@ class Schudeler
 {
 private:
 	
-	UI*pUI;
+	UI* pUI;
 	Queue<process*> NewList;
 	Queue<process*> BlockedList;
 	Queue<process*> TerminatedList;
@@ -34,7 +34,7 @@ private:
 
 public:
 
-\
+
 	Schudeler();
 	template<typename A, typename B>
 	void MoveProcessor(A Old, B New);
