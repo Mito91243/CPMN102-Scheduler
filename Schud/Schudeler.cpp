@@ -199,25 +199,28 @@ void Schudeler::Terminate(process* p)
 void Schudeler::Simulate()
 {
     process* p;
-    srand(time(NULL));
+    srand(static_cast<unsigned int>(std::time(nullptr)));
+
     for (int i = 0; i < processornum; i++)
     {
+        
         if (pArr[i]->isbusy() == 'I')
         {
             pArr[i]->setrun();
         }
 
         int rnumber = rand() % 100 + 1;
-        if (rnumber < 3)
-        {
-            pArr[i]->setstate('S');
-            p = pArr[i]->changerun();
-            while (p)
-            {
-                Allocate(p);
-                p = pArr[i]->changerun();
-            }
-        }
+        
+        //if (rnumber < 3)
+        //{
+        //    pArr[i]->setstate('S');
+        //    p = pArr[i]->changerun();
+        //    while (p)
+        //    {
+        //        Allocate(p);
+        //        p = pArr[i]->changerun();
+        //    }
+        //}
 
         RRprocessor* R = dynamic_cast<RRprocessor*>(pArr[i]);
         if (R)
@@ -293,26 +296,28 @@ void Schudeler::Simulate()
 
 void Schudeler::Allocate(process*pr)
 {
-    int min = 9999;
     int max = 0;
-    Processor* maxQueue= nullptr;
     Processor* minQueue = nullptr;
     process* p, * q;
-    
+    int min = 999;
+
     //Get Longest and shortest Queue
     for (int i = 0; i < processornum; i++)
-    {
-        
-        if (pArr[i]->GetTimer() < min && pArr[i]->isbusy() != 'S')
+    {    
+        if (pArr[i]->GetTimer() < min)
         {
             minQueue = pArr[i];
             min = pArr[i]->GetTimer();
+
         }
 
+        std::cout << "Processor num is : " << i << " Processor TimeLeft is: " << pArr[i]->GetTimer() << endl;
+
     }
-    
+
+
     //Allocate process rag3a mn Blocked to shortest Queue
-    if (pr != nullptr)
+    if (pr)
     {  
         int minWT = 100000000000000000;
         int index = 0;
@@ -320,6 +325,7 @@ void Schudeler::Allocate(process*pr)
         //Check if process is child so it can go only to FCFS
         if (pr->getischild())
         {
+
             for (int i = 0; i < processornum; i++)
             {
                 FCFS* F = dynamic_cast<FCFS*>(pArr[i]);
@@ -330,12 +336,20 @@ void Schudeler::Allocate(process*pr)
                 }
             }
             pArr[index]->addtoready(pr);
+
         }
         else // process coming from blocked or overheating processor
         {
-            minQueue->addtoready(pr);
+           minQueue->addtoready(pr);      
         }
-        //return to avoid redundant calls of Allocate
+
+       //return to avoid redundant calls of Allocate
+
+    }
+
+    if (pr)
+    {
+        pr = nullptr;
         return;
     }
 
@@ -343,25 +357,29 @@ void Schudeler::Allocate(process*pr)
     //Only check after first timestep cause 0%STL is runtime error 
     if (timestep != 0 && (timestep % STL) == 0)
     {
-       // LoadBalancing();
+        //LoadBalancing();
     }
 
     //Normal ALlocation for Processor with shortest queue
         if (NewList.isEmpty())
             return;
-    
+
+
+
         NewList.peekFront(p);
     
+
         //check if process in newList has arrival time as timestep
         if (!p || p->getAT() != timestep)
             return;
+
+     
 
         minQueue->addtoready(p);
 
         //remove the process from newlist
         NewList.dequeue(q);
 
-        pr = nullptr;
         //recursive call again to see if multiple processes has the same timestep
         Allocate(pr);
 }
@@ -388,8 +406,7 @@ void Schudeler::LoadBalancing()
             max = pArr[i]->GetTimer();
         }
     }
-    cout << "MAXQUEUE TIMELEFT IS : "<<maxQueue->GetTimer() << endl;
-    cout << "MINQUEUE TIMELEFT IS : " << minQueue->GetTimer() <<endl;
+    
     //get the ratio between longest queue and shortest queue with respect to CT
     int stl = (maxQueue->GetTimer() - minQueue->GetTimer()) / maxQueue->GetTimer();
     for (int i = 0; i < processornum; i++)
