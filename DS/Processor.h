@@ -5,26 +5,34 @@ class Processor
 protected:
 	process* running = nullptr; // pointer to what the process is working on
 	char state = 'I'; //I for IDLE, B for Busy,S 
-	int n=5;//overheat time
+	int n = 5;//overheat time
 	int OT;//time spent overheating
+	int timeleft = 0;
+
 public:
-	 process* changerun() 
-	 {
+	
+	process* changerun()
+	{
 		process* temp = running;
+
 		running = Schedulealgo();
+
 		return temp;
-	 }
+	}
 	void setstate(char z) {
 		state = z;
 	}
-	void setrun() {
+	void setrun() 
+	{
 		running = Schedulealgo();
 		if (running != nullptr)
 			state = 'B';
 		else
 			state = 'I';
 	}
-	char isbusy() {
+
+	char isbusy() 
+	{
 		return state;
 	}
 	process* getrun() {
@@ -48,12 +56,17 @@ public:
 			if (running->getWON() == running->getCT())
 			{
 				running = Schedulealgo();
-				if (running != nullptr) 
+				
+				if (running != nullptr)
 				{
 					state = 'B';
+					//timeleft = timeleft - running->getCT();
 					running->setstate('RUN');
-					if (running->getRT() == 0) {
+					
+					if (running->getRT() == 0) 
+					{
 						running->setRT(T);
+					
 					}
 				}
 				else
@@ -101,4 +114,11 @@ public:
 	//and returns a pointer to the one that needs IO to be added to the blocked
 	//if no returns a nullptr
 	virtual void printdata() = 0;
+
+	virtual int GetTimer()
+	{
+		return timeleft;
+	}
+	
+	virtual int getIDLE(int& TotalTRT) = 0;
 };
