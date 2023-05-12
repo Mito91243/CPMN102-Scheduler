@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-process::process(int A, int I, int C, int NO) 
+process::process(int A, int I, int C, int NO)
 {
 	AT = A;
 	PID = I;
@@ -18,7 +18,6 @@ process::process(int A, int I, int C, int NO)
 	IOT = 0;
 	lch = nullptr;
 	rch = nullptr;
-	cout << "Process Created: " << endl;
 }
 void process::setRT(int T) {
 	RT = T - AT;
@@ -124,13 +123,6 @@ bool process::getischild()
 {
 	return ischild;
 }
-bool process::operator ==(int k) 
-{
-	if (PID == k)
-		return true;
-	else
-		return false;
-}
 process::~process() {
 	delete[]AIO_D;
 	delete[]AIO_R;
@@ -139,3 +131,10 @@ process::~process() {
 	aout << p->getPID();
 	return aout;
 }*/
+bool process::operator ==(int k)
+{
+	if (PID == k)
+		return true;
+	else
+		return false;
+}
