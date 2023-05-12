@@ -55,13 +55,12 @@ public:
 	void resetIOT();
 	void setischild();
 	bool getischild();
-	bool operator ==(int k);
 	~process();
 	friend ostream& operator << (ostream& out, const process& p) {
 		out << p.PID << "  ";
 		return out;
 	}
+	bool operator ==(int k);
 };
-
 
 
