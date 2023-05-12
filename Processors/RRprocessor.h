@@ -9,47 +9,63 @@ private:
 	int timeslice;
 	Queue<process*> Q1;
 	int TOP;
+	int busytime;
+	int processTRT;
 
 public:
-	
+
 	RRprocessor(int ts)
 	{
 		timeslice = ts;
 	}
 	virtual void addtoready(process* pr)
 	{
-			Q1.enqueue(pr);
-			pr->setstate('RDY');
+		timeleft = timeleft + pr->getCT();
+		Q1.enqueue(pr);
+		pr->setstate('RDY');
 	}
 	virtual process* Schedulealgo()
 	{
-		process* pr;
+		process* pr = nullptr;
 		bool z = Q1.dequeue(pr);
-		if (z)
+
+		if (pr)
+		{
+			timeleft = timeleft - pr->getCT();
 			return pr;
+		}
 		else
 			return nullptr;
 	}
 	process* reachedts(int T)
 	{
-		if(running)
-		{ 
+		if (running)
+		{
 			TOP++;
 		}
-		if (TOP == timeslice) {
+		
+		if (TOP == timeslice) 
+		{
 			process* finished = running;
 			process* pr;
 			bool z = Q1.dequeue(pr);
-			if (!z) {
+			
+			if (!z) 
+			{
 				state = 'I';
 				running = nullptr;
 				return finished;
 			}
-			else {
+			else 
+			{
 				state = 'B';
 				running = pr;
 				running->setstate('RUN');
-				if (running->getRT() == 0) {
+
+				timeleft = timeleft - pr->getCT();
+
+				if (running->getRT() == 0) 
+				{
 					running->setRT(T);
 				}
 				TOP = 0;
@@ -66,7 +82,7 @@ public:
 	}
 	void printdata()
 	{
-		cout << Q1.getCount() << " RDY: ";
+		std::cout << Q1.getCount() << " RDY: ";
 		Q1.printq();
 	}
 	process* getrun()
@@ -74,9 +90,17 @@ public:
 		return running;
 	}
 
-	int  getWT()
+
+	int getIDLE(int& TotalTRT)
 	{
-		return Q1.sum();
+		if (running != NULL)
+		{
+			busytime++;
+			processTRT = processTRT + running->getTRT();
+
+		}
+
+		TotalTRT = processTRT;
+		return busytime;
 	}
-	
 };
