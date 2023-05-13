@@ -28,7 +28,7 @@ private:
 	int RTF;
 	int MAXW;
 	int LBnum;
-
+	int mcs,mcr=0;
 	int nSK;
 	int nFCFS, nSJF, nRR;
 
@@ -52,8 +52,4 @@ public:
 	void orph(process* p);
 	~Schudeler();
 };
-
-
-
-
 
