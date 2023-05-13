@@ -8,6 +8,7 @@ protected:
 	int n = 5;//overheat time
 	int OT;//time spent overheating
 	int timeleft = 0;
+	int busytime = 0;
 
 public:
 	
@@ -51,6 +52,8 @@ public:
 		}
 		if (running != nullptr)
 		{
+			busytime++;
+
 			running->incrementWON();
 			process* temp = running;
 			if (running->getWON() == running->getCT())
@@ -73,6 +76,8 @@ public:
 				{
 					state = 'I';
 				}
+
+
 				temp->setstate('TRM');
 				return temp;
 
@@ -119,6 +124,9 @@ public:
 	{
 		return timeleft;
 	}
+	virtual int GetBusyTime()
+	{
+		return busytime;
+	}
 	
-	virtual int getIDLE(int& TotalTRT) = 0;
 };
