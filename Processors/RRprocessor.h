@@ -9,8 +9,6 @@ private:
 	int timeslice;
 	Queue<process*> Q1;
 	int TOP;
-	int busytime;
-	int processTRT;
 
 public:
 
@@ -91,16 +89,5 @@ public:
 	}
 
 
-	int getIDLE(int& TotalTRT)
-	{
-		if (running != NULL)
-		{
-			busytime++;
-			processTRT = processTRT + running->getTRT();
 
-		}
-
-		TotalTRT = processTRT;
-		return busytime;
-	}
 };
