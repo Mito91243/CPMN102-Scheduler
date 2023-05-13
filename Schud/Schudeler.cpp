@@ -34,7 +34,7 @@ void Schudeler::LoadInput()
     string p;
     cin >> p;
 
-    ifstream InFile("C:\\Users\\HP User\\Desktop\\Project Data\\" + p + ".txt");
+    ifstream InFile("C:\\Users\\dell\\Desktop\\code1\\" + p + ".txt");
 
     //Checks if the File is opened
     if (InFile.fail())
@@ -44,7 +44,6 @@ void Schudeler::LoadInput()
     }
 
     //Read number of each Processor (First Line)
-    int nFCFS, nSJF, nRR;
     InFile >> nFCFS >> nSJF >> nRR;
     processornum = nRR + nFCFS + nSJF;
 
@@ -66,16 +65,16 @@ void Schudeler::LoadInput()
 
     for (int i = 0; i < nRR; i++)
     {
-        pArr[i] = new RRprocessor(RRslice);
+        pArr[i] = new RRprocessor(RRslice,RTF,this);
     }
     for (int i = 0; i < nFCFS; i++)
     {
-        pArr[nRR + i] = new FCFS();
+        pArr[nRR + i] = new FCFS(MAXW,this);
 
     }
     for (int i = 0; i < nSJF; i++)
     {
-        pArr[nRR + nFCFS + i] = new SJF();
+        pArr[nRR + nFCFS + i] = new SJF(this);
 
     }
 
@@ -168,26 +167,18 @@ void Schudeler::LoadInput()
 void Schudeler::Run()
 {
     LoadInput();
-    
 
-    if (processnum == 0 || processornum == 0)
-        return;
-
-    char x = 'y';
-    while (x == 'y')
+    while (TerminatedList.getCount() != processnum)
     {
+
         Simulate();
         Allocate(nullptr);
-        
+
         pUI->updateUI(timestep, processornum, pArr, BlockedList, TerminatedList);
-        //pUI->input();
-        cin >> x;
+        pUI->input();
         timestep++;
 
     }
-
-    cout << "Output Created:  " << endl;
-    Output();
 
 }
 
@@ -203,14 +194,14 @@ void Schudeler::Simulate()
 
     for (int i = 0; i < processornum; i++)
     {
-        
+
         if (pArr[i]->isbusy() == 'I')
         {
-            pArr[i]->setrun();
+            pArr[i]->setrun(timestep);
         }
 
         int rnumber = rand() % 100 + 1;
-        
+
         //if (rnumber < 3)
         //{
         //    pArr[i]->setstate('S');
@@ -294,7 +285,7 @@ void Schudeler::Simulate()
 
 }
 
-void Schudeler::Allocate(process*pr)
+void Schudeler::Allocate(process* pr)
 {
     int max = 0;
     Processor* minQueue = nullptr;
@@ -303,7 +294,7 @@ void Schudeler::Allocate(process*pr)
 
     //Get Longest and shortest Queue
     for (int i = 0; i < processornum; i++)
-    {    
+    {
         if (pArr[i]->GetTimer() < min)
         {
             minQueue = pArr[i];
@@ -318,10 +309,10 @@ void Schudeler::Allocate(process*pr)
 
     //Allocate process rag3a mn Blocked to shortest Queue
     if (pr)
-    {  
+    {
         int minWT = 100000000000000000;
         int index = 0;
-        
+
         //Check if process is child so it can go only to FCFS
         if (pr->getischild())
         {
@@ -340,10 +331,10 @@ void Schudeler::Allocate(process*pr)
         }
         else // process coming from blocked or overheating processor
         {
-           minQueue->addtoready(pr);      
+            minQueue->addtoready(pr);
         }
 
-       //return to avoid redundant calls of Allocate
+        //return to avoid redundant calls of Allocate
 
     }
 
@@ -361,27 +352,27 @@ void Schudeler::Allocate(process*pr)
     }
 
     //Normal ALlocation for Processor with shortest queue
-        if (NewList.isEmpty())
-            return;
+    if (NewList.isEmpty())
+        return;
 
 
 
-        NewList.peekFront(p);
-    
+    NewList.peekFront(p);
 
-        //check if process in newList has arrival time as timestep
-        if (!p || p->getAT() != timestep)
-            return;
 
-     
+    //check if process in newList has arrival time as timestep
+    if (!p || p->getAT() != timestep)
+        return;
 
-        minQueue->addtoready(p);
 
-        //remove the process from newlist
-        NewList.dequeue(q);
 
-        //recursive call again to see if multiple processes has the same timestep
-        Allocate(pr);
+    minQueue->addtoready(p);
+
+    //remove the process from newlist
+    NewList.dequeue(q);
+
+    //recursive call again to see if multiple processes has the same timestep
+    Allocate(pr);
 }
 
 void Schudeler::LoadBalancing()
@@ -406,7 +397,7 @@ void Schudeler::LoadBalancing()
             max = pArr[i]->GetTimer();
         }
     }
-    
+
     //get the ratio between longest queue and shortest queue with respect to CT
     int stl = (maxQueue->GetTimer() - minQueue->GetTimer()) / maxQueue->GetTimer();
     for (int i = 0; i < processornum; i++)
@@ -420,14 +411,14 @@ void Schudeler::LoadBalancing()
             cout << "MinQueue IS: " << i << endl;
         }
     }
-    
+
     cout << " CHECK 1" << endl;
 
     if (stl < 0.4)
         return;
 
     cout << "CHECK 2" << endl;
-    process* p = maxQueue->Schedulealgo();
+    process* p = maxQueue->changerun(timestep);
     minQueue->addtoready(p);
     //Counter for number of processes moved
     LBnum++;
@@ -437,138 +428,138 @@ void Schudeler::LoadBalancing()
     LoadBalancing();
 }
 
-void Schudeler::Output()
-{
-    ofstream OutFile;
-    process* q = nullptr;
-    
-    OutFile.open("outputzz.txt");
-    OutFile << "  TT       " << "PID     " << "AT      " << "CT      " << "IO_D " << "       WT" << "      RT" << "      TRT" << endl;
-
-    int size = TerminatedList.getCount();
-
-    process** prArr = new process* [size];
-    
-    for (int i = 0; i < size;i++)
-    {
-        TerminatedList.dequeue(q);
-        prArr[i] = q;
-    }
-
-
-     //cout Each process in the output file 
-    for(int i=0; i<size; i++)
-    {
-
-                 //printing details of each process
-                 OutFile << "  " << prArr[i]->getTT() << "        " << prArr[i]->getPID() << "       " << prArr[i]->getAT() << "      " << prArr[i]->getCT() << "      ";
-
-                 //This part handles if a process have multiple IO_D's to print them
-                 //int* arr= prArr[i]->getIO_D();
-                 //int zz=0;
-                 //while (arr[zz] > 0)
-                 //{
-                 //    OutFile << arr[zz++] << " ";
-                 //}
-                 //arr = NULL;
-           
-                 //printing details of each process
-                 OutFile << "           " << prArr[i]->getWT() << "      " << prArr[i]->getRT() << "       " << prArr[i]->getTRT() << endl;
-    }
- 
-     
-
-     //delete sorted array of TT 
-         //delete[]arrS;
-         //arrS = NULL;
-
-         OutFile << endl << endl <<"Processes: " << size << endl;
-
-         int sumRT = 0;
-         int sumWT = 0;
-         int sumTRT = 0;
-
-         for (int i = 0; i < size; i++)
-         {
-             sumWT = sumWT + prArr[i]->getWT();
-             sumRT = sumRT + prArr[i]->getRT();
-             sumTRT = sumTRT + prArr[i]->getTRT();
-         }
-
-         OutFile << "Avg WT = " << sumWT / size << "     " << "Avg RT = " << sumRT / size << "     " << "Avg TRT = " << sumTRT / size << endl;
-         
-         
-         //OutFile << "Migration %:   RTF =  " << RTFpercentage << " %" << "   MAXW =  " << MAXWpercentage << " %" << endl;
-         
-         OutFile << "Work Steal %:  " << LBnum/processnum << endl;
-         //OutFile << "Forked Process %:  " << Fork percentage << endl;
-         //OutFile << "Killed Process %:  " << Kill percentage << endl;
-  
-         
-         //get the number of each processor type and print it
-         int nFCFS = 0;
-         int nRR = 0;
-         int nSJF = 0;
-         for (int i = 0; i < processornum; i++)
-         {
-             FCFS* F = dynamic_cast<FCFS*>(pArr[i]);
-             RRprocessor* R = dynamic_cast<RRprocessor*>(pArr[i]);
-             SJF* S = dynamic_cast<SJF*>(pArr[i]);
-             if (F)nFCFS++;
-             if (R)nRR++;
-             if (S)nSJF++;
-         }
-
-         OutFile << "Processors: " << processornum << "  [ " << nFCFS << "  FCFS , " << nSJF << "  SJF , " << nRR << "  RR" << " ]" << endl;
-         
-         
-         //Processor Load OutPut
-         OutFile << "Processors Load " << endl;
-
-         int TRT;
-         for (int i = 0; i < processornum; i++)
-         {
-             int busytime = pArr[i]->getIDLE(TRT);                       
-             
-             ////////////////////Termination Time always 0
-             cout << "TRT IS : " << TRT << endl;
-             
-             //a check to make sure busytime and TRT are not 0 to avoid run errors
-             if (busytime == 0 || TRT == 0)
-                 continue;
-
-             cout << "Busy Time is : " << busytime << endl;
-
-             int pLoad = busytime / TRT;
-
-             OutFile << "P" << i << "= " << pLoad << " % ";
-         }
-
-         //Processor Utilization Output
-         OutFile << endl << "Processors Utilization " << endl;
-
-         int sumUtilz = 0;
-         for (int i = 0; i < processornum; i++)
-         {
-             int busytime = pArr[i]->getIDLE(TRT);
-             
-             if (busytime == 0)
-                 continue;
-
-
-
-             float pUtilz = busytime / timestep;
-             sumUtilz = sumUtilz + pUtilz;
-
-             OutFile << "P" << i << "= " << pUtilz << " % ";
-         }
-
-         //Average Utilization
-         int avgUtilz = sumUtilz / processornum;
-
-         OutFile << endl << "Avg utilization: " << avgUtilz << " %" << endl;
-
-}
+//void Schudeler::Output()
+//{
+//    ofstream OutFile;
+//    process* q = nullptr;
+//
+//    OutFile.open("outputzz.txt");
+//    OutFile << "  TT       " << "PID     " << "AT      " << "CT      " << "IO_D " << "       WT" << "      RT" << "      TRT" << endl;
+//
+//    int size = TerminatedList.getCount();
+//
+//    process** prArr = new process * [size];
+//
+//    for (int i = 0; i < size;i++)
+//    {
+//        TerminatedList.dequeue(q);
+//        prArr[i] = q;
+//    }
+//
+//
+//    //cout Each process in the output file 
+//    for (int i = 0; i < size; i++)
+//    {
+//
+//        //printing details of each process
+//        OutFile << "  " << prArr[i]->getTT() << "        " << prArr[i]->getPID() << "       " << prArr[i]->getAT() << "      " << prArr[i]->getCT() << "      ";
+//
+//        //This part handles if a process have multiple IO_D's to print them
+//        //int* arr= prArr[i]->getIO_D();
+//        //int zz=0;
+//        //while (arr[zz] > 0)
+//        //{
+//        //    OutFile << arr[zz++] << " ";
+//        //}
+//        //arr = NULL;
+//
+//        //printing details of each process
+//        OutFile << "           " << prArr[i]->getWT() << "      " << prArr[i]->getRT() << "       " << prArr[i]->getTRT() << endl;
+//    }
+//
+//
+//
+//    //delete sorted array of TT 
+//        //delete[]arrS;
+//        //arrS = NULL;
+//
+//    OutFile << endl << endl << "Processes: " << size << endl;
+//
+//    int sumRT = 0;
+//    int sumWT = 0;
+//    int sumTRT = 0;
+//
+//    for (int i = 0; i < size; i++)
+//    {
+//        sumWT = sumWT + prArr[i]->getWT();
+//        sumRT = sumRT + prArr[i]->getRT();
+//        sumTRT = sumTRT + prArr[i]->getTRT();
+//    }
+//
+//    OutFile << "Avg WT = " << sumWT / size << "     " << "Avg RT = " << sumRT / size << "     " << "Avg TRT = " << sumTRT / size << endl;
+//
+//
+//    //OutFile << "Migration %:   RTF =  " << RTFpercentage << " %" << "   MAXW =  " << MAXWpercentage << " %" << endl;
+//
+//    OutFile << "Work Steal %:  " << LBnum / processnum << endl;
+//    //OutFile << "Forked Process %:  " << Fork percentage << endl;
+//    //OutFile << "Killed Process %:  " << Kill percentage << endl;
+//
+//
+//    //get the number of each processor type and print it
+//    int nFCFS = 0;
+//    int nRR = 0;
+//    int nSJF = 0;
+//    for (int i = 0; i < processornum; i++)
+//    {
+//        FCFS* F = dynamic_cast<FCFS*>(pArr[i]);
+//        RRprocessor* R = dynamic_cast<RRprocessor*>(pArr[i]);
+//        SJF* S = dynamic_cast<SJF*>(pArr[i]);
+//        if (F)nFCFS++;
+//        if (R)nRR++;
+//        if (S)nSJF++;
+//    }
+//
+//    OutFile << "Processors: " << processornum << "  [ " << nFCFS << "  FCFS , " << nSJF << "  SJF , " << nRR << "  RR" << " ]" << endl;
+//
+//
+//    //Processor Load OutPut
+//    OutFile << "Processors Load " << endl;
+//
+//    int TRT;
+//    for (int i = 0; i < processornum; i++)
+//    {
+//        int busytime = pArr[i]->getIDLE(TRT);
+//
+//        ////////////////////Termination Time always 0
+//        cout << "TRT IS : " << TRT << endl;
+//
+//        //a check to make sure busytime and TRT are not 0 to avoid run errors
+//        if (busytime == 0 || TRT == 0)
+//            continue;
+//
+//        cout << "Busy Time is : " << busytime << endl;
+//
+//        int pLoad = busytime / TRT;
+//
+//        OutFile << "P" << i << "= " << pLoad << " % ";
+//    }
+//
+//    //Processor Utilization Output
+//    OutFile << endl << "Processors Utilization " << endl;
+//
+//    int sumUtilz = 0;
+//    for (int i = 0; i < processornum; i++)
+//    {
+//        int busytime = pArr[i]->getIDLE(TRT);
+//
+//        if (busytime == 0)
+//            continue;
+//
+//
+//
+//        float pUtilz = busytime / timestep;
+//        sumUtilz = sumUtilz + pUtilz;
+//
+//        OutFile << "P" << i << "= " << pUtilz << " % ";
+//    }
+//
+//    //Average Utilization
+//    int avgUtilz = sumUtilz / processornum;
+//
+//    OutFile << endl << "Avg utilization: " << avgUtilz << " %" << endl;
+//
+//}
 
 Schudeler::~Schudeler()
 {
@@ -627,4 +618,19 @@ void Schudeler::orph(process* p)
             orph(p->getrchild());
         }
     }
+}
+bool Schudeler::migratetsjf(process* p) {
+    if (nSJF == 0)
+        return false;
+    else
+        pArr[nRR + nFCFS]->addtoready(p);
+    return true;
+
+}
+bool Schudeler::migratetRR(process* p) {
+    if (nRR == 0)
+        return false;
+    else
+        pArr[0]->addtoready(p);
+    return true;
 }
