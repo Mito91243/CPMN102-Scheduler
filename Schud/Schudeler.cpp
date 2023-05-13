@@ -65,11 +65,11 @@ void Schudeler::LoadInput()
 
     for (int i = 0; i < nRR; i++)
     {
-        pArr[i] = new RRprocessor(RRslice,RTF,this);
+        pArr[i] = new RRprocessor(RRslice, RTF, this);
     }
     for (int i = 0; i < nFCFS; i++)
     {
-        pArr[nRR + i] = new FCFS(MAXW,this);
+        pArr[nRR + i] = new FCFS(MAXW, this);
 
     }
     for (int i = 0; i < nSJF; i++)
@@ -290,7 +290,7 @@ void Schudeler::Allocate(process* pr)
     int max = 0;
     Processor* minQueue = nullptr;
     process* p, * q;
-    int min = 999;
+    int min = 9999;
 
     //Get Longest and shortest Queue
     for (int i = 0; i < processornum; i++)
@@ -622,15 +622,43 @@ void Schudeler::orph(process* p)
 bool Schudeler::migratetsjf(process* p) {
     if (nSJF == 0)
         return false;
-    else
-        pArr[nRR + nFCFS]->addtoready(p);
+    else {
+        int min = 9999;
+        Processor* minQueue = nullptr;
+        for (int i = nRR+nFCFS; i < processornum; i++)
+        {
+            if (pArr[i]->GetTimer() < min && pArr[i]->isbusy() != 'S')
+            {
+                minQueue = pArr[i];
+                min = pArr[i]->GetTimer();
+            }
+        }
+        if (min == 9999)
+            return false;
+        minQueue->addtoready(p);
+        mcs++;
+    }
     return true;
 
 }
 bool Schudeler::migratetRR(process* p) {
     if (nRR == 0)
         return false;
-    else
-        pArr[0]->addtoready(p);
+    else {
+        int min = 9999;
+        Processor* minQueue = nullptr;
+        for (int i = 0; i < nRR; i++)
+        {
+            if (pArr[i]->GetTimer() < min && pArr[i]->isbusy() != 'S')
+            {
+                minQueue = pArr[i];
+                min = pArr[i]->GetTimer();
+            }
+        }
+        if (min == 9999)
+            return false;
+        minQueue->addtoready(p);
+        mcr++;
+    }
     return true;
 }
