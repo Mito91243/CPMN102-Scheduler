@@ -1,5 +1,8 @@
 #pragma once
 #include"process.h"
+
+class Schudeler; //forward declaration
+
 class Processor
 {
 protected:
@@ -9,30 +12,31 @@ protected:
 	int OT;//time spent overheating
 	int timeleft = 0;
 	int busytime = 0;
+	Schudeler* SCH = nullptr;
 
 public:
-	
-	process* changerun()
+
+	process* changerun(int T)
 	{
 		process* temp = running;
 
-		running = Schedulealgo();
+		Schedulealgo(T);
 
 		return temp;
 	}
 	void setstate(char z) {
 		state = z;
 	}
-	void setrun() 
+	void setrun(int T)
 	{
-		running = Schedulealgo();
+		Schedulealgo(T);
 		if (running != nullptr)
 			state = 'B';
 		else
 			state = 'I';
 	}
 
-	char isbusy() 
+	char isbusy()
 	{
 		return state;
 	}
@@ -58,18 +62,18 @@ public:
 			process* temp = running;
 			if (running->getWON() == running->getCT())
 			{
-				running = Schedulealgo();
-				
+				Schedulealgo(T);
+
 				if (running != nullptr)
 				{
 					state = 'B';
 					//timeleft = timeleft - running->getCT();
 					running->setstate('RUN');
-					
-					if (running->getRT() == 0) 
+
+					if (running->getRT() == 0)
 					{
 						running->setRT(T);
-					
+
 					}
 				}
 				else
@@ -89,7 +93,7 @@ public:
 	//and returns a pointer to the finished one to be added to the termminated
 	//if no returns a nullptr
 	virtual void addtoready(process* pr) = 0;//adds to the list
-	virtual process* Schedulealgo() = 0;
+	virtual void Schedulealgo(int T) = 0;
 	virtual process* needsIO(int T)
 	{
 		process* temp = running;
@@ -97,7 +101,7 @@ public:
 		{
 			if (running->getWON() == running->getIO_R())
 			{
-				running = Schedulealgo();
+				Schedulealgo(T);
 				if (running != nullptr) {
 					state = 'B';
 					running->setstate('RUN');
@@ -128,5 +132,5 @@ public:
 	{
 		return busytime;
 	}
-	
+
 };
