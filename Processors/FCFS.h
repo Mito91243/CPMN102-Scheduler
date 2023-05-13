@@ -9,8 +9,6 @@ class FCFS : public Processor
 {
 private:
 	LinkedList<process*> RL;
-	int busytime;
-	int processTRT;
 
 public:
 
@@ -47,6 +45,9 @@ public:
 		{
 			if (*running == r)
 			{
+
+
+
 				p = running;
 				running = Schedulealgo();
 				if (running)
@@ -94,6 +95,7 @@ public:
 		if (running == p)
 		{
 			running->setstate('ORPH');
+
 			running = Schedulealgo();
 			if (running)
 			{
@@ -114,18 +116,6 @@ public:
 		return false;
 	}
 
-	int getIDLE(int& TotalTRT)
-	{
-		if (running != NULL)
-		{
-			busytime++;
-			processTRT = processTRT + running->getTRT();
-
-		}
-
-		TotalTRT = processTRT;
-		return busytime;
-	}
 };
 
 #endif	
