@@ -13,7 +13,7 @@ using namespace std;
 class Schudeler
 {
 private:
-	
+
 	UI* pUI;
 	Queue<process*> NewList;
 	Queue<process*> BlockedList;
@@ -30,7 +30,7 @@ private:
 	int LBnum;
 
 	int nSK;
-
+	int nFCFS, nSJF, nRR;
 
 public:
 
@@ -44,13 +44,16 @@ public:
 	void Run();
 	void Allocate(process* pr);
 	void Output();
-	
-	//void Migration();
+
+	bool migratetsjf(process* p);
+	bool migratetRR(process* p);
 	void LoadBalancing();
 	void Simulate();
-	void orph(process*p);
+	void orph(process* p);
 	~Schudeler();
 };
+
+
 
 
 
