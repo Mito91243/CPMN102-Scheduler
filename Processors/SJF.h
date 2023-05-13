@@ -5,8 +5,6 @@ class SJF :public Processor
 {
 private:
 	PiorityQueue<process*>  sjfqueue;
-	int busytime = 0;
-	int processTRT = 0;
 
 public:
 	void addtoready(process* pr)
@@ -37,19 +35,6 @@ public:
 	{
 		std::cout << sjfqueue.getCount() << "RDY:   ";
 		sjfqueue.printpq();
-	}
-
-	int getIDLE(int& TotalTRT)
-	{
-		if (running != NULL)
-		{
-			busytime++;
-			processTRT = processTRT + running->getTRT();
-
-		}
-
-		TotalTRT = processTRT;
-		return busytime;
 	}
 
 };
