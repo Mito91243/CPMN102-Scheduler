@@ -8,9 +8,9 @@ Simulator features an interactive mode or silent mode where it would only produc
 
 Implementened data structures and used them for order arrivals, cancellation, and their assignment to allocate processes to different processors of different specialties.
 
-Team Members:
 
-Philopateer Amir
-Ahmed Ashry
-Salma
-Mahmoud
+## Team Members:
+ - Philopateer Amir
+ - Mahmoud
+ - Ahmed Ashry
+ - Salma
